@@ -1,26 +1,23 @@
 import 'package:flutter/material.dart';
+import 'pages/home.dart';
+import 'pages/settings.dart';
 
 class MyApp extends StatelessWidget {
-  const MyApp({super.key}); // const für Tests wichtig
+  const MyApp({super.key});
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      debugShowCheckedModeBanner: false,
       title: 'Schuldenmanagement',
       theme: ThemeData(
-        primarySwatch: Colors.blue, // Einfaches Theme
+        primarySwatch: Colors.blue,
       ),
-      home: Scaffold(
-        appBar: AppBar(
-          title: const Text('Willkommen'), // Titel der App
-        ),
-        body: const Center(
-          child: Text(
-            'Hallo, Welt!', // Einfache Nachricht
-            style: TextStyle(fontSize: 24),
-          ),
-        ),
-      ),
+      home: const HomePage(), // Startseite festlegen
+      routes: {
+        '/home': (context) => const HomePage(),
+        '/settings': (context) => const SettingsPage(),
+      },
     );
   }
 }
