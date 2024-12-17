@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'app.dart'; // Verweis auf die Haupt-App
+import 'app.dart';
 
 void main() {
-  runApp(const MyApp()); // Startet die App
+  runApp(const MyApp());
 }
