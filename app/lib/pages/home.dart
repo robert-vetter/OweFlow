@@ -1,6 +1,9 @@
+// home.dart
 import 'package:flutter/material.dart';
 
 class HomePage extends StatefulWidget {
+  const HomePage({super.key});
+
   @override
   _HomePageState createState() => _HomePageState();
 }
@@ -8,32 +11,77 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   int _selectedIndex = 0;
 
-  // Screens for each tab in the Taskbar
   final List<Widget> _pages = [
-    HomeScreen(),
-    GroupsScreen(),
-    Placeholder(), // Placeholder for the Quick Action
-    StatisticsScreen(),
-    PaymentsScreen(),
+    const HomeScreen(),
+    const GroupsPage(),
+    const Placeholder(), // Placeholder for Quick Action Modal
+    const StatisticsPage(),
+    const PaymentsPage(),
+  ];
+
+  final List<String> _pageTitles = [
+    'Home',
+    'Groups',
+    'Quick Actions',
+    'Statistics',
+    'Payments'
   ];
 
   void _onItemTapped(int index) {
-    setState(() {
-      _selectedIndex = index;
-    });
+    if (index == 2) {
+      // Quick Action Modal für den '+' Button
+      showModalBottomSheet(
+        context: context,
+        builder: (BuildContext context) {
+          return Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              ListTile(
+                leading: const Icon(Icons.add),
+                title: const Text('Add Expense'),
+                onTap: () {
+                  Navigator.pop(context);
+                },
+              ),
+              ListTile(
+                leading: const Icon(Icons.group_add),
+                title: const Text('Create Group'),
+                onTap: () {
+                  Navigator.pop(context);
+                },
+              ),
+              ListTile(
+                leading: const Icon(Icons.account_balance),
+                title: const Text('Settle Debt'),
+                onTap: () {
+                  Navigator.pop(context);
+                },
+              ),
+            ],
+          );
+        },
+      );
+    } else {
+      setState(() {
+        _selectedIndex = index;
+      });
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Home'),
+        title: Text(_pageTitles[_selectedIndex]),
         centerTitle: true,
       ),
-      body: _pages[_selectedIndex],
+      body: IndexedStack(
+        index: _selectedIndex,
+        children: _pages,
+      ),
       bottomNavigationBar: BottomNavigationBar(
         type: BottomNavigationBarType.fixed,
-        items: [
+        items: const [
           BottomNavigationBarItem(
             icon: Icon(Icons.home),
             label: 'Home',
@@ -43,8 +91,7 @@ class _HomePageState extends State<HomePage> {
             label: 'Groups',
           ),
           BottomNavigationBarItem(
-            icon:
-                Icon(Icons.add_circle, size: 40.0), // Highlighted Quick Action
+            icon: Icon(Icons.add_circle, size: 40.0),
             label: 'Add',
           ),
           BottomNavigationBarItem(
@@ -61,85 +108,51 @@ class _HomePageState extends State<HomePage> {
         unselectedItemColor: Colors.grey,
         onTap: _onItemTapped,
       ),
-      floatingActionButton: _selectedIndex == 2
-          ? FloatingActionButton(
-              onPressed: () {
-                // Define Quick Action logic here
-                showModalBottomSheet(
-                  context: context,
-                  builder: (BuildContext context) {
-                    return Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        ListTile(
-                          leading: Icon(Icons.add),
-                          title: Text('Add Expense'),
-                          onTap: () {
-                            Navigator.pop(context);
-                            // Navigate to Add Expense screen
-                          },
-                        ),
-                        ListTile(
-                          leading: Icon(Icons.group_add),
-                          title: Text('Create Group'),
-                          onTap: () {
-                            Navigator.pop(context);
-                            // Navigate to Create Group screen
-                          },
-                        ),
-                        ListTile(
-                          leading: Icon(Icons.account_balance),
-                          title: Text('Settle Debt'),
-                          onTap: () {
-                            Navigator.pop(context);
-                            // Navigate to Settle Debt screen
-                          },
-                        ),
-                      ],
-                    );
-                  },
-                );
-              },
-              child: Icon(Icons.add),
-            )
-          : null,
     );
   }
 }
 
-// Placeholder screens for each tab
+// Home Screen (Minimal, kann erweitert werden)
 class HomeScreen extends StatelessWidget {
+  const HomeScreen({super.key});
+
   @override
   Widget build(BuildContext context) {
-    return Center(
-      child: Text('Home Screen'),
+    return const Center(
+      child: Text('Welcome to the Home Screen!'),
     );
   }
 }
 
-class GroupsScreen extends StatelessWidget {
+class GroupsPage extends StatelessWidget {
+  const GroupsPage({super.key});
+
   @override
   Widget build(BuildContext context) {
-    return Center(
-      child: Text('Groups Screen'),
+    return const Center(
+      child: Text('Groups Page'),
     );
   }
 }
 
-class StatisticsScreen extends StatelessWidget {
+class StatisticsPage extends StatelessWidget {
+  const StatisticsPage({super.key});
+
   @override
   Widget build(BuildContext context) {
-    return Center(
-      child: Text('Statistics Screen'),
+    return const Center(
+      child: Text('Statistics Page'),
     );
   }
 }
 
-class PaymentsScreen extends StatelessWidget {
+class PaymentsPage extends StatelessWidget {
+  const PaymentsPage({super.key});
+
   @override
   Widget build(BuildContext context) {
-    return Center(
-      child: Text('Payments Screen'),
+    return const Center(
+      child: Text('Payments Page'),
     );
   }
 }

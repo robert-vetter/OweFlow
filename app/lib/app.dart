@@ -1,6 +1,8 @@
-// app.dart
 import 'package:flutter/material.dart';
 import 'pages/home.dart'; // Import the home.dart file
+import 'pages/groups.dart'; // New file for Groups
+import 'pages/statistics.dart'; // New file for Statistics
+import 'pages/payments.dart'; // New file for Payments
 
 class MyApp extends StatelessWidget {
   @override
@@ -11,7 +13,7 @@ class MyApp extends StatelessWidget {
         primarySwatch: Colors.blue,
         visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
-      home: HomePage(), // Set HomePage as the starting point of the app
+      home: HomePage(),
     );
   }
 }
