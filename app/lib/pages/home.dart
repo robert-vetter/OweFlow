@@ -10,7 +10,7 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   int _selectedIndex = 0;
-  bool _isLoggedIn =
+  final bool _isLoggedIn =
       false; // Mock login state, replace with actual logic. (nur zu testzwecken sumiliert einen zustand logged in / Gast)
 
   final List<Widget> _pages = [
@@ -122,7 +122,7 @@ class _HomePageState extends State<HomePage> {
                     Navigator.push(
                         context,
                         MaterialPageRoute(
-                            builder: (context) => AuthStartScreen()));
+                            builder: (context) => const AuthStartScreen()));
                   },
                   child: const Text(
                     'Login',
@@ -213,6 +213,8 @@ class PaymentsPage extends StatelessWidget {
 }
 
 class AuthStartScreen extends StatelessWidget {
+  const AuthStartScreen({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -222,50 +224,52 @@ class AuthStartScreen extends StatelessWidget {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Text(
+              const Text(
                 'Welcome to Oweflow',
                 style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
               ),
-              SizedBox(height: 16),
-              Text(
+              const SizedBox(height: 16),
+              const Text(
                 'Track and share expenses seamlessly.',
                 style: TextStyle(fontSize: 18, color: Colors.grey),
               ),
-              SizedBox(height: 32),
-              ElevatedButton.icon(
-                onPressed: () {
-                  Navigator.push(context,
-                      MaterialPageRoute(builder: (context) => LoginScreen()));
-                },
-                icon: Icon(Icons.login),
-                label: Text('Login'),
-              ),
-              SizedBox(height: 16),
+              const SizedBox(height: 32),
               ElevatedButton.icon(
                 onPressed: () {
                   Navigator.push(
                       context,
                       MaterialPageRoute(
-                          builder: (context) => RegistrationScreen()));
+                          builder: (context) => const LoginScreen()));
                 },
-                icon: Icon(Icons.app_registration),
-                label: Text('Register'),
+                icon: const Icon(Icons.login),
+                label: const Text('Login'),
               ),
-              SizedBox(height: 32),
-              Text(
+              const SizedBox(height: 16),
+              ElevatedButton.icon(
+                onPressed: () {
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => const RegistrationScreen()));
+                },
+                icon: const Icon(Icons.app_registration),
+                label: const Text('Register'),
+              ),
+              const SizedBox(height: 32),
+              const Text(
                 'Or sign in with:',
                 style: TextStyle(fontSize: 16, color: Colors.grey),
               ),
-              SizedBox(height: 16),
+              const SizedBox(height: 16),
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   IconButton(
-                    icon: Icon(Icons.facebook, color: Colors.blue),
+                    icon: const Icon(Icons.facebook, color: Colors.blue),
                     onPressed: () {},
                   ),
                   IconButton(
-                    icon: Icon(Icons.g_mobiledata, color: Colors.red),
+                    icon: const Icon(Icons.g_mobiledata, color: Colors.red),
                     onPressed: () {},
                   ),
                 ],
@@ -279,34 +283,36 @@ class AuthStartScreen extends StatelessWidget {
 }
 
 class LoginScreen extends StatelessWidget {
+  const LoginScreen({super.key});
+
   void _navigateToForgotPassword(BuildContext context) {
     Navigator.push(context,
-        MaterialPageRoute(builder: (context) => ForgotPasswordScreen()));
+        MaterialPageRoute(builder: (context) => const ForgotPasswordScreen()));
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('Login')),
+      appBar: AppBar(title: const Text('Login')),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Text(
+            const Text(
               'Welcome Back!',
               style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
             ),
-            SizedBox(height: 16),
-            TextField(
+            const SizedBox(height: 16),
+            const TextField(
               decoration: InputDecoration(
                 labelText: 'Email or Username',
                 border: OutlineInputBorder(),
                 prefixIcon: Icon(Icons.email),
               ),
             ),
-            SizedBox(height: 16),
-            TextField(
+            const SizedBox(height: 16),
+            const TextField(
               decoration: InputDecoration(
                 labelText: 'Password',
                 border: OutlineInputBorder(),
@@ -314,25 +320,25 @@ class LoginScreen extends StatelessWidget {
               ),
               obscureText: true,
             ),
-            SizedBox(height: 16),
+            const SizedBox(height: 16),
             ElevatedButton(
               onPressed: () {
                 Navigator.push(
                     context,
                     MaterialPageRoute(
-                        builder: (context) => BiometricAuthScreen()));
+                        builder: (context) => const BiometricAuthScreen()));
               },
-              child: Text('Login'),
               style: ElevatedButton.styleFrom(
-                minimumSize: Size(double.infinity, 50),
+                minimumSize: const Size(double.infinity, 50),
               ),
+              child: const Text('Login'),
             ),
             TextButton(
               onPressed: () => _navigateToForgotPassword(context),
-              child: Text('Forgot Password?'),
               style: TextButton.styleFrom(
-                textStyle: TextStyle(fontSize: 16, color: Colors.blue),
+                textStyle: const TextStyle(fontSize: 16, color: Colors.blue),
               ),
+              child: const Text('Forgot Password?'),
             ),
           ],
         ),
@@ -342,43 +348,45 @@ class LoginScreen extends StatelessWidget {
 }
 
 class ForgotPasswordScreen extends StatelessWidget {
+  const ForgotPasswordScreen({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('Forgot Password')),
+      appBar: AppBar(title: const Text('Forgot Password')),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Text(
+            const Text(
               'Reset Your Password',
               style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
             ),
-            SizedBox(height: 16),
+            const SizedBox(height: 16),
             Text(
               'Enter your email to receive password reset instructions.',
               style: TextStyle(fontSize: 16, color: Colors.grey[700]),
               textAlign: TextAlign.center,
             ),
-            SizedBox(height: 16),
-            TextField(
+            const SizedBox(height: 16),
+            const TextField(
               decoration: InputDecoration(
                 labelText: 'Email',
                 border: OutlineInputBorder(),
                 prefixIcon: Icon(Icons.email),
               ),
             ),
-            SizedBox(height: 16),
+            const SizedBox(height: 16),
             ElevatedButton(
               onPressed: () {
                 // Dummy password reset functionality
                 Navigator.pop(context);
               },
-              child: Text('Send Reset Link'),
               style: ElevatedButton.styleFrom(
-                minimumSize: Size(double.infinity, 50),
+                minimumSize: const Size(double.infinity, 50),
               ),
+              child: const Text('Send Reset Link'),
             ),
           ],
         ),
@@ -388,47 +396,49 @@ class ForgotPasswordScreen extends StatelessWidget {
 }
 
 class RegistrationScreen extends StatelessWidget {
+  const RegistrationScreen({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('Register')),
+      appBar: AppBar(title: const Text('Register')),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: SingleChildScrollView(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              Text(
+              const Text(
                 'Create Your Account',
                 style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
                 textAlign: TextAlign.center,
               ),
-              SizedBox(height: 16),
-              TextField(
+              const SizedBox(height: 16),
+              const TextField(
                 decoration: InputDecoration(
                   labelText: 'Full Name',
                   border: OutlineInputBorder(),
                   prefixIcon: Icon(Icons.person),
                 ),
               ),
-              SizedBox(height: 16),
-              TextField(
+              const SizedBox(height: 16),
+              const TextField(
                 decoration: InputDecoration(
                   labelText: 'Email',
                   border: OutlineInputBorder(),
                   prefixIcon: Icon(Icons.email),
                 ),
               ),
-              SizedBox(height: 16),
-              TextField(
+              const SizedBox(height: 16),
+              const TextField(
                 decoration: InputDecoration(
                   labelText: 'Username',
                   border: OutlineInputBorder(),
                   prefixIcon: Icon(Icons.account_circle),
                 ),
               ),
-              SizedBox(height: 16),
-              TextField(
+              const SizedBox(height: 16),
+              const TextField(
                 decoration: InputDecoration(
                   labelText: 'Password',
                   border: OutlineInputBorder(),
@@ -436,55 +446,57 @@ class RegistrationScreen extends StatelessWidget {
                 ),
                 obscureText: true,
               ),
-              SizedBox(height: 16),
-              TextField(
+              const SizedBox(height: 16),
+              const TextField(
                 decoration: InputDecoration(
                   labelText: 'Phone Number (Optional)',
                   border: OutlineInputBorder(),
                   prefixIcon: Icon(Icons.phone),
                 ),
               ),
-              SizedBox(height: 16),
+              const SizedBox(height: 16),
               ElevatedButton(
                 onPressed: () {
                   Navigator.push(
                       context,
                       MaterialPageRoute(
-                          builder: (context) => EmailVerificationScreen()));
+                          builder: (context) =>
+                              const EmailVerificationScreen()));
                 },
-                child: Text('Register'),
                 style: ElevatedButton.styleFrom(
-                  minimumSize: Size(double.infinity, 50),
-                  textStyle: TextStyle(fontSize: 18),
+                  minimumSize: const Size(double.infinity, 50),
+                  textStyle: const TextStyle(fontSize: 18),
                 ),
+                child: const Text('Register'),
               ),
-              SizedBox(height: 16),
+              const SizedBox(height: 16),
               Text(
                 'Or sign up with:',
                 textAlign: TextAlign.center,
                 style: TextStyle(fontSize: 16, color: Colors.grey[700]),
               ),
-              SizedBox(height: 16),
+              const SizedBox(height: 16),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
                   IconButton(
-                    icon: Icon(Icons.facebook, color: Colors.blue),
+                    icon: const Icon(Icons.facebook, color: Colors.blue),
                     iconSize: 36,
                     onPressed: () {},
                   ),
                   IconButton(
-                    icon: Icon(Icons.g_mobiledata, color: Colors.red),
+                    icon: const Icon(Icons.g_mobiledata, color: Colors.red),
                     iconSize: 36,
                     onPressed: () {},
                   ),
                   IconButton(
-                    icon: Icon(Icons.alternate_email, color: Colors.blueAccent),
+                    icon: const Icon(Icons.alternate_email,
+                        color: Colors.blueAccent),
                     iconSize: 36,
                     onPressed: () {},
                   ),
                   IconButton(
-                    icon: Icon(Icons.link, color: Colors.lightBlue),
+                    icon: const Icon(Icons.link, color: Colors.lightBlue),
                     iconSize: 36,
                     onPressed: () {},
                   ),
@@ -499,45 +511,47 @@ class RegistrationScreen extends StatelessWidget {
 }
 
 class EmailVerificationScreen extends StatelessWidget {
+  const EmailVerificationScreen({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('Email Verification')),
+      appBar: AppBar(title: const Text('Email Verification')),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Text(
+            const Text(
               'Verify Your Email',
               style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
             ),
-            SizedBox(height: 16),
+            const SizedBox(height: 16),
             Text(
               'We have sent a verification code to your email. Please enter it below to verify your account.',
               style: TextStyle(fontSize: 16, color: Colors.grey[700]),
               textAlign: TextAlign.center,
             ),
-            SizedBox(height: 16),
-            TextField(
+            const SizedBox(height: 16),
+            const TextField(
               decoration: InputDecoration(
                 labelText: 'Verification Code',
                 border: OutlineInputBorder(),
                 prefixIcon: Icon(Icons.code),
               ),
             ),
-            SizedBox(height: 16),
+            const SizedBox(height: 16),
             ElevatedButton(
               onPressed: () {
                 Navigator.push(
                     context,
                     MaterialPageRoute(
-                        builder: (context) => PhoneVerificationScreen()));
+                        builder: (context) => const PhoneVerificationScreen()));
               },
-              child: Text('Verify Email'),
               style: ElevatedButton.styleFrom(
-                minimumSize: Size(double.infinity, 50),
+                minimumSize: const Size(double.infinity, 50),
               ),
+              child: const Text('Verify Email'),
             ),
           ],
         ),
@@ -547,42 +561,44 @@ class EmailVerificationScreen extends StatelessWidget {
 }
 
 class PhoneVerificationScreen extends StatelessWidget {
+  const PhoneVerificationScreen({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('Phone Verification')),
+      appBar: AppBar(title: const Text('Phone Verification')),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Text(
+            const Text(
               'Verify Your Phone Number',
               style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
             ),
-            SizedBox(height: 16),
+            const SizedBox(height: 16),
             Text(
               'We have sent a verification code to your phone. Please enter it below to verify your number.',
               style: TextStyle(fontSize: 16, color: Colors.grey[700]),
               textAlign: TextAlign.center,
             ),
-            SizedBox(height: 16),
-            TextField(
+            const SizedBox(height: 16),
+            const TextField(
               decoration: InputDecoration(
                 labelText: 'Verification Code',
                 border: OutlineInputBorder(),
                 prefixIcon: Icon(Icons.sms),
               ),
             ),
-            SizedBox(height: 16),
+            const SizedBox(height: 16),
             ElevatedButton(
               onPressed: () {
                 Navigator.pop(context);
               },
-              child: Text('Verify Phone'),
               style: ElevatedButton.styleFrom(
-                minimumSize: Size(double.infinity, 50),
+                minimumSize: const Size(double.infinity, 50),
               ),
+              child: const Text('Verify Phone'),
             ),
           ],
         ),
@@ -592,29 +608,31 @@ class PhoneVerificationScreen extends StatelessWidget {
 }
 
 class AppPasswordScreen extends StatelessWidget {
+  const AppPasswordScreen({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('Set App Security')),
+      appBar: AppBar(title: const Text('Set App Security')),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Text(
+            const Text(
               'Secure your app with a password or biometric authentication.',
               style: TextStyle(fontSize: 18),
               textAlign: TextAlign.center,
             ),
-            SizedBox(height: 16),
+            const SizedBox(height: 16),
             ElevatedButton(
               onPressed: () {},
-              child: Text('Set App Password'),
+              child: const Text('Set App Password'),
             ),
-            SizedBox(height: 16),
+            const SizedBox(height: 16),
             ElevatedButton(
               onPressed: () {},
-              child: Text('Enable Fingerprint/Face ID'),
+              child: const Text('Enable Fingerprint/Face ID'),
             ),
           ],
         ),
@@ -624,6 +642,8 @@ class AppPasswordScreen extends StatelessWidget {
 }
 
 class BiometricAuthScreen extends StatelessWidget {
+  const BiometricAuthScreen({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -633,20 +653,20 @@ class BiometricAuthScreen extends StatelessWidget {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Text(
+              const Text(
                 'Authenticate to Continue',
                 style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
               ),
-              SizedBox(height: 16),
-              Icon(Icons.fingerprint, size: 80, color: Colors.blue),
-              SizedBox(height: 16),
+              const SizedBox(height: 16),
+              const Icon(Icons.fingerprint, size: 80, color: Colors.blue),
+              const SizedBox(height: 16),
               ElevatedButton(
                 onPressed: () {},
-                child: Text('Use Biometric Authentication'),
+                child: const Text('Use Biometric Authentication'),
               ),
               TextButton(
                 onPressed: () {},
-                child: Text('Enter Code Instead'),
+                child: const Text('Enter Code Instead'),
               ),
             ],
           ),
