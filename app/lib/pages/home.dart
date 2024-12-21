@@ -168,7 +168,6 @@ class _HomePageState extends State<HomePage> {
   }
 }
 
-// Home Screen (Minimal, kann erweitert werden)
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
 
