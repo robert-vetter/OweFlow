@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
 import 'pages/home.dart'; // Import the home.dart file
-import 'pages/groups.dart'; // New file for Groups
-import 'pages/statistics.dart'; // New file for Statistics
-import 'pages/payments.dart'; // New file for Payments
 
 class MyApp extends StatelessWidget {
+  const MyApp({super.key});
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -13,7 +12,7 @@ class MyApp extends StatelessWidget {
         primarySwatch: Colors.blue,
         visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
-      home: HomePage(),
+      home: const HomePage(),
     );
   }
 }
