@@ -279,6 +279,11 @@ class AuthStartScreen extends StatelessWidget {
 }
 
 class LoginScreen extends StatelessWidget {
+  void _navigateToForgotPassword(BuildContext context) {
+    Navigator.push(context,
+        MaterialPageRoute(builder: (context) => ForgotPasswordScreen()));
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -318,10 +323,62 @@ class LoginScreen extends StatelessWidget {
                         builder: (context) => BiometricAuthScreen()));
               },
               child: Text('Login'),
+              style: ElevatedButton.styleFrom(
+                minimumSize: Size(double.infinity, 50),
+              ),
             ),
             TextButton(
-              onPressed: () {},
+              onPressed: () => _navigateToForgotPassword(context),
               child: Text('Forgot Password?'),
+              style: TextButton.styleFrom(
+                textStyle: TextStyle(fontSize: 16, color: Colors.blue),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class ForgotPasswordScreen extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: Text('Forgot Password')),
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text(
+              'Reset Your Password',
+              style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+            ),
+            SizedBox(height: 16),
+            Text(
+              'Enter your email to receive password reset instructions.',
+              style: TextStyle(fontSize: 16, color: Colors.grey[700]),
+              textAlign: TextAlign.center,
+            ),
+            SizedBox(height: 16),
+            TextField(
+              decoration: InputDecoration(
+                labelText: 'Email',
+                border: OutlineInputBorder(),
+                prefixIcon: Icon(Icons.email),
+              ),
+            ),
+            SizedBox(height: 16),
+            ElevatedButton(
+              onPressed: () {
+                // Dummy password reset functionality
+                Navigator.pop(context);
+              },
+              child: Text('Send Reset Link'),
+              style: ElevatedButton.styleFrom(
+                minimumSize: Size(double.infinity, 50),
+              ),
             ),
           ],
         ),
@@ -339,10 +396,12 @@ class RegistrationScreen extends StatelessWidget {
         padding: const EdgeInsets.all(16.0),
         child: SingleChildScrollView(
           child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               Text(
                 'Create Your Account',
-                style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+                style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
+                textAlign: TextAlign.center,
               ),
               SizedBox(height: 16),
               TextField(
@@ -391,9 +450,45 @@ class RegistrationScreen extends StatelessWidget {
                   Navigator.push(
                       context,
                       MaterialPageRoute(
-                          builder: (context) => VerificationScreen()));
+                          builder: (context) => EmailVerificationScreen()));
                 },
                 child: Text('Register'),
+                style: ElevatedButton.styleFrom(
+                  minimumSize: Size(double.infinity, 50),
+                  textStyle: TextStyle(fontSize: 18),
+                ),
+              ),
+              SizedBox(height: 16),
+              Text(
+                'Or sign up with:',
+                textAlign: TextAlign.center,
+                style: TextStyle(fontSize: 16, color: Colors.grey[700]),
+              ),
+              SizedBox(height: 16),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  IconButton(
+                    icon: Icon(Icons.facebook, color: Colors.blue),
+                    iconSize: 36,
+                    onPressed: () {},
+                  ),
+                  IconButton(
+                    icon: Icon(Icons.g_mobiledata, color: Colors.red),
+                    iconSize: 36,
+                    onPressed: () {},
+                  ),
+                  IconButton(
+                    icon: Icon(Icons.alternate_email, color: Colors.blueAccent),
+                    iconSize: 36,
+                    onPressed: () {},
+                  ),
+                  IconButton(
+                    icon: Icon(Icons.link, color: Colors.lightBlue),
+                    iconSize: 36,
+                    onPressed: () {},
+                  ),
+                ],
               ),
             ],
           ),
@@ -403,19 +498,24 @@ class RegistrationScreen extends StatelessWidget {
   }
 }
 
-class VerificationScreen extends StatelessWidget {
+class EmailVerificationScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('Verify Your Account')),
+      appBar: AppBar(title: Text('Email Verification')),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Text(
-              'Enter the code sent to your email/phone',
-              style: TextStyle(fontSize: 18),
+              'Verify Your Email',
+              style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+            ),
+            SizedBox(height: 16),
+            Text(
+              'We have sent a verification code to your email. Please enter it below to verify your account.',
+              style: TextStyle(fontSize: 16, color: Colors.grey[700]),
               textAlign: TextAlign.center,
             ),
             SizedBox(height: 16),
@@ -423,9 +523,8 @@ class VerificationScreen extends StatelessWidget {
               decoration: InputDecoration(
                 labelText: 'Verification Code',
                 border: OutlineInputBorder(),
-                prefixIcon: Icon(Icons.verified),
+                prefixIcon: Icon(Icons.code),
               ),
-              keyboardType: TextInputType.number,
             ),
             SizedBox(height: 16),
             ElevatedButton(
@@ -433,9 +532,57 @@ class VerificationScreen extends StatelessWidget {
                 Navigator.push(
                     context,
                     MaterialPageRoute(
-                        builder: (context) => AppPasswordScreen()));
+                        builder: (context) => PhoneVerificationScreen()));
               },
-              child: Text('Verify'),
+              child: Text('Verify Email'),
+              style: ElevatedButton.styleFrom(
+                minimumSize: Size(double.infinity, 50),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class PhoneVerificationScreen extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: Text('Phone Verification')),
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text(
+              'Verify Your Phone Number',
+              style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+            ),
+            SizedBox(height: 16),
+            Text(
+              'We have sent a verification code to your phone. Please enter it below to verify your number.',
+              style: TextStyle(fontSize: 16, color: Colors.grey[700]),
+              textAlign: TextAlign.center,
+            ),
+            SizedBox(height: 16),
+            TextField(
+              decoration: InputDecoration(
+                labelText: 'Verification Code',
+                border: OutlineInputBorder(),
+                prefixIcon: Icon(Icons.sms),
+              ),
+            ),
+            SizedBox(height: 16),
+            ElevatedButton(
+              onPressed: () {
+                Navigator.pop(context);
+              },
+              child: Text('Verify Phone'),
+              style: ElevatedButton.styleFrom(
+                minimumSize: Size(double.infinity, 50),
+              ),
             ),
           ],
         ),
