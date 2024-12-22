@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:local_auth/local_auth.dart';
 import 'forgot_password.dart';
 import 'verification_email.dart';
 
@@ -13,33 +12,15 @@ class EmailCheckScreen extends StatefulWidget {
 class _EmailCheckScreenState extends State<EmailCheckScreen> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
-  final TextEditingController _usernameController = TextEditingController();
-  final LocalAuthentication _localAuth = LocalAuthentication();
+  final TextEditingController _firstName = TextEditingController();
 
   // ---------------------------
-  final bool login = true;
+  final bool existsInDB = false;
   // ---------------------------
 
   bool _emailChecked = false; // Wurde die E-Mail geprüft?
   bool _emailExists = false; // Existiert die E-Mail bereits?
-  bool _isBiometricAvailable = false; // Ist Biometrie verfügbar?
   bool _showPasswordField = false; // Soll das Passwortfeld angezeigt werden?
-
-  @override
-  void initState() {
-    super.initState();
-    _checkBiometricSupport();
-  }
-
-  /// Prüft, ob biometrische Authentifizierung verfügbar ist
-  Future<void> _checkBiometricSupport() async {
-    bool canCheckBiometrics = await _localAuth.canCheckBiometrics;
-    bool isDeviceSupported = await _localAuth.isDeviceSupported();
-
-    setState(() {
-      _isBiometricAvailable = canCheckBiometrics && isDeviceSupported;
-    });
-  }
 
   /// Überprüft, ob die E-Mail bereits registriert ist
   void _checkEmail() {
@@ -55,46 +36,10 @@ class _EmailCheckScreenState extends State<EmailCheckScreen> {
     // Dummy-Logik zur E-Mail-Existenzprüfung
     setState(() {
       _emailChecked = true;
-      _emailExists = login; // Beispielprüfung
+      _emailExists = existsInDB; // Beispielprüfung
       _showPasswordField =
           _emailExists; // Passwortfeld nur bei bestehender E-Mail
     });
-
-    if (_emailExists && _isBiometricAvailable) {
-      _authenticateWithBiometrics();
-    }
-  }
-
-  /// Automatische biometrische Authentifizierung
-  Future<void> _authenticateWithBiometrics() async {
-    try {
-      bool authenticated = await _localAuth.authenticate(
-        localizedReason: 'Please authenticate to continue',
-        options: const AuthenticationOptions(
-          biometricOnly: true,
-          stickyAuth: true,
-          useErrorDialogs: true,
-        ),
-      );
-
-      if (authenticated) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Login successful via Biometric!')),
-        );
-        Navigator.popUntil(context, ModalRoute.withName('/'));
-      } else {
-        setState(() {
-          _showPasswordField = true;
-        });
-      }
-    } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Biometric authentication failed: $e')),
-      );
-      setState(() {
-        _showPasswordField = true;
-      });
-    }
   }
 
   /// Login-Prozess mit Passwort
@@ -212,9 +157,9 @@ class _EmailCheckScreenState extends State<EmailCheckScreen> {
               ),
             ] else if (_emailChecked && !_emailExists) ...[
               TextField(
-                controller: _usernameController,
+                controller: _firstName,
                 decoration: const InputDecoration(
-                  labelText: 'Username',
+                  labelText: 'Forename',
                   border: OutlineInputBorder(),
                   prefixIcon: Icon(Icons.person),
                 ),
