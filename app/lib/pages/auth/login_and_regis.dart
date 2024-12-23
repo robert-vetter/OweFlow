@@ -85,7 +85,7 @@ class _EmailCheckScreenState extends State<EmailCheckScreen> {
         child: Column(
           children: [
             const Text(
-              'Enter your email to continue',
+              'Continue with your Email',
               style: TextStyle(fontSize: 18),
               textAlign: TextAlign.center,
             ),
@@ -112,8 +112,8 @@ class _EmailCheckScreenState extends State<EmailCheckScreen> {
                 child: const Text('Continue'),
               ),
               const SizedBox(height: 24),
-              const Text('Or sign in with:',
-                  style: TextStyle(fontSize: 16, color: Colors.grey)),
+              const Text('Or continue with:',
+                  style: TextStyle(fontSize: 18, color: Colors.black)),
               const SizedBox(height: 12),
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -135,6 +135,12 @@ class _EmailCheckScreenState extends State<EmailCheckScreen> {
                     onPressed: () {},
                   ),
                 ],
+              ),
+              const SizedBox(height: 32),
+              const Text(
+                'Choose your preferred way to continue.',
+                style: TextStyle(fontSize: 14, color: Colors.grey),
+                textAlign: TextAlign.center,
               ),
             ] else if (_emailChecked && _emailExists && _showPasswordField) ...[
               TextField(
