@@ -52,7 +52,7 @@ class DefaultFirebaseOptions {
 
   static const FirebaseOptions android = FirebaseOptions(
     apiKey: 'AIzaSyAe3Wf88uGSV6GNmEF38giNG4lagt5WWi4',
-    appId: '1:400917952970:android:00918829314ddd74a0f733',
+    appId: '1:400917952970:android:717b1417e8c17acea0f733',
     messagingSenderId: '400917952970',
     projectId: 'oweflow-9cbfb',
     storageBucket: 'oweflow-9cbfb.firebasestorage.app',
