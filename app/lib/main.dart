@@ -6,8 +6,8 @@ import 'app.dart';
 void main() async {
   await Supabase.initialize(
     anonKey:
-        "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpiZmVodWJwY2NsdWhuc3Ryd2RqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzQ5ODk5NzUsImV4cCI6MjA1MDU2NTk3NX0.NEyCAGirr4J4iHBxud50uyvpGtaHgqSvVy5RQ8H4Q2I",
-    url: "https://jbfehubpccluhnstrwdj.supabase.co",
+        "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndoaHVib3ZrYXNxeGhkaG5wc2FkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzUwMzg5OTMsImV4cCI6MjA1MDYxNDk5M30.7xv3-ZvXF2uohhCdj_MMGRVOCyTktmQCzbDVUmUWJZo",
+    url: "https://whhubovkasqxhdhnpsad.supabase.co",
   );
   runApp(const MyApp());
 }
