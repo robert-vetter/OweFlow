@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'forgot_password.dart';
 import 'verification_email.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 class EmailCheckScreen extends StatefulWidget {
   const EmailCheckScreen({super.key});
@@ -12,17 +13,16 @@ class EmailCheckScreen extends StatefulWidget {
 class _EmailCheckScreenState extends State<EmailCheckScreen> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
-  final TextEditingController _firstName = TextEditingController();
+  final TextEditingController _firstNameController = TextEditingController();
 
-  // ---------------------------
+  // Dummy-Variable zur Simulation von Datenbank-Abfragen
   final bool existsInDB = false;
-  // ---------------------------
 
-  bool _emailChecked = false; // Wurde die E-Mail geprüft?
-  bool _emailExists = false; // Existiert die E-Mail bereits?
-  bool _showPasswordField = false; // Soll das Passwortfeld angezeigt werden?
+  bool _emailChecked = false; // E-Mail wurde geprüft?
+  bool _emailExists = false; // E-Mail existiert in der Datenbank?
+  bool _showPasswordField = false; // Passwortfeld anzeigen?
 
-  /// Überprüft, ob die E-Mail bereits registriert ist
+  /// Prüft, ob die E-Mail in der Datenbank existiert
   void _checkEmail() {
     String email = _emailController.text.trim();
 
@@ -33,16 +33,16 @@ class _EmailCheckScreenState extends State<EmailCheckScreen> {
       return;
     }
 
-    // Dummy-Logik zur E-Mail-Existenzprüfung
+    // Dummy-Logik zur E-Mail-Prüfung
     setState(() {
       _emailChecked = true;
-      _emailExists = existsInDB; // Beispielprüfung
+      _emailExists = existsInDB; // Hier simuliert
       _showPasswordField =
-          _emailExists; // Passwortfeld nur bei bestehender E-Mail
+          _emailExists; // Passwortfeld anzeigen bei existierender E-Mail
     });
   }
 
-  /// Login-Prozess mit Passwort
+  /// Login-Logik
   void _login() {
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(content: Text('Logged in successfully!')),
@@ -58,22 +58,187 @@ class _EmailCheckScreenState extends State<EmailCheckScreen> {
     );
   }
 
-  /// Registrierung-Prozess
-  void _register() {
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Registration Successful!')),
+  /// Registrierung
+  Future<void> _register() async {
+    String email = _emailController.text.trim();
+    String password = _passwordController.text.trim();
+    String firstName = _firstNameController.text.trim();
+
+    if (email.isEmpty || password.isEmpty || firstName.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Please fill out all fields')),
+      );
+      return;
+    }
+
+    try {
+      final response = await Supabase.instance.client.auth
+          .signUp(email: email, password: password, data: {
+        'first_name': firstName,
+      });
+
+      if (response.user != null) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Registration successful!')),
+        );
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+              builder: (context) => const EmailVerificationScreen()),
+        );
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Registration failed: $e')),
+      );
+    }
+  }
+
+  /// Widget für die E-Mail-Eingabe und Weiter-Button
+  Widget _buildEmailInput() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        const Text(
+          'Enter your email to continue',
+          style: TextStyle(fontSize: 18),
+          textAlign: TextAlign.center,
+        ),
+        const SizedBox(height: 16),
+        TextField(
+          controller: _emailController,
+          decoration: const InputDecoration(
+            labelText: 'Email',
+            border: OutlineInputBorder(),
+            prefixIcon: Icon(Icons.email),
+          ),
+          keyboardType: TextInputType.emailAddress,
+        ),
+        const SizedBox(height: 16),
+        ElevatedButton(
+          onPressed: _checkEmail,
+          style: ElevatedButton.styleFrom(
+            minimumSize: const Size(double.infinity, 50),
+          ),
+          child: const Text('Continue'),
+        ),
+      ],
     );
-    Navigator.push(
-      context,
-      MaterialPageRoute(builder: (context) => const EmailVerificationScreen()),
+  }
+
+  /// Widget für das Login-Formular
+  Widget _buildLoginForm() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        const Text(
+          'Login to your account',
+          style: TextStyle(fontSize: 18),
+          textAlign: TextAlign.center,
+        ),
+        const SizedBox(height: 16),
+        TextField(
+          controller: _passwordController,
+          decoration: const InputDecoration(
+            labelText: 'Password',
+            border: OutlineInputBorder(),
+            prefixIcon: Icon(Icons.lock),
+          ),
+          obscureText: true,
+        ),
+        const SizedBox(height: 16),
+        ElevatedButton(
+          onPressed: _login,
+          child: const Text('Login'),
+        ),
+        TextButton(
+          onPressed: _forgotPassword,
+          child: const Text('Forgot Password?'),
+        ),
+      ],
+    );
+  }
+
+  /// Widget für das Registrierungs-Formular
+  Widget _buildRegisterForm() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        const Text(
+          'Create a new account',
+          style: TextStyle(fontSize: 18),
+          textAlign: TextAlign.center,
+        ),
+        const SizedBox(height: 16),
+        TextField(
+          controller: _firstNameController,
+          decoration: const InputDecoration(
+            labelText: 'First Name',
+            border: OutlineInputBorder(),
+            prefixIcon: Icon(Icons.person),
+          ),
+        ),
+        const SizedBox(height: 16),
+        TextField(
+          controller: _passwordController,
+          decoration: const InputDecoration(
+            labelText: 'Password',
+            border: OutlineInputBorder(),
+            prefixIcon: Icon(Icons.lock),
+          ),
+          obscureText: true,
+        ),
+        const SizedBox(height: 16),
+        ElevatedButton(
+          onPressed: _register,
+          child: const Text('Register'),
+        ),
+      ],
+    );
+  }
+
+  /// Widget für Social Media Login
+  Widget _buildSocialLogin() {
+    return Column(
+      children: [
+        const SizedBox(height: 24),
+        const Text(
+          'Or continue with:',
+          style: TextStyle(fontSize: 18, color: Colors.black),
+        ),
+        const SizedBox(height: 12),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            IconButton(
+              icon: const Icon(Icons.facebook, color: Colors.blue),
+              iconSize: 36,
+              onPressed: () {},
+            ),
+            IconButton(
+              icon: const Icon(Icons.g_mobiledata, color: Colors.red),
+              iconSize: 36,
+              onPressed: () {},
+            ),
+            IconButton(
+              icon: const Icon(Icons.alternate_email, color: Colors.blueAccent),
+              iconSize: 36,
+              onPressed: () {},
+            ),
+          ],
+        ),
+      ],
     );
   }
 
   @override
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Get Started'),
+        title: Text(
+          _emailChecked ? (_emailExists ? 'Login' : 'Sign Up') : 'Get Started',
+        ),
         centerTitle: true,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
@@ -83,15 +248,15 @@ class _EmailCheckScreenState extends State<EmailCheckScreen> {
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16.0),
         child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
+            // E-Mail-Feld bleibt immer sichtbar
             const Text(
-              'Continue with your Email',
+              'Enter your email to continue',
               style: TextStyle(fontSize: 18),
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 16),
-
-            // E-Mail Feld bleibt immer sichtbar
             TextField(
               controller: _emailController,
               decoration: const InputDecoration(
@@ -103,7 +268,8 @@ class _EmailCheckScreenState extends State<EmailCheckScreen> {
             ),
             const SizedBox(height: 16),
 
-            if (!_emailChecked) ...[
+            // Weiter-Button nur sichtbar, wenn E-Mail noch nicht geprüft wurde
+            if (!_emailChecked)
               ElevatedButton(
                 onPressed: _checkEmail,
                 style: ElevatedButton.styleFrom(
@@ -111,81 +277,15 @@ class _EmailCheckScreenState extends State<EmailCheckScreen> {
                 ),
                 child: const Text('Continue'),
               ),
-              const SizedBox(height: 24),
-              const Text('Or continue with:',
-                  style: TextStyle(fontSize: 18, color: Colors.black)),
-              const SizedBox(height: 12),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  IconButton(
-                    icon: const Icon(Icons.facebook, color: Colors.blue),
-                    iconSize: 36,
-                    onPressed: () {},
-                  ),
-                  IconButton(
-                    icon: const Icon(Icons.g_mobiledata, color: Colors.red),
-                    iconSize: 36,
-                    onPressed: () {},
-                  ),
-                  IconButton(
-                    icon: const Icon(Icons.alternate_email,
-                        color: Colors.blueAccent),
-                    iconSize: 36,
-                    onPressed: () {},
-                  ),
-                ],
-              ),
-              const SizedBox(height: 32),
-              const Text(
-                'Choose your preferred way to continue.',
-                style: TextStyle(fontSize: 14, color: Colors.grey),
-                textAlign: TextAlign.center,
-              ),
-            ] else if (_emailChecked && _emailExists && _showPasswordField) ...[
-              TextField(
-                controller: _passwordController,
-                decoration: const InputDecoration(
-                  labelText: 'Password',
-                  border: OutlineInputBorder(),
-                  prefixIcon: Icon(Icons.lock),
-                ),
-                obscureText: true,
-              ),
-              const SizedBox(height: 16),
-              ElevatedButton(
-                onPressed: _login,
-                child: const Text('Login'),
-              ),
-              TextButton(
-                onPressed: _forgotPassword,
-                child: const Text('Forgot Password?'),
-              ),
-            ] else if (_emailChecked && !_emailExists) ...[
-              TextField(
-                controller: _firstName,
-                decoration: const InputDecoration(
-                  labelText: 'Forename',
-                  border: OutlineInputBorder(),
-                  prefixIcon: Icon(Icons.person),
-                ),
-              ),
-              const SizedBox(height: 16),
-              TextField(
-                controller: _passwordController,
-                decoration: const InputDecoration(
-                  labelText: 'Password',
-                  border: OutlineInputBorder(),
-                  prefixIcon: Icon(Icons.lock),
-                ),
-                obscureText: true,
-              ),
-              const SizedBox(height: 16),
-              ElevatedButton(
-                onPressed: _register,
-                child: const Text('Register'),
-              ),
-            ],
+
+            // Login-Formular sichtbar, wenn E-Mail existiert
+            if (_emailChecked && _emailExists) _buildLoginForm(),
+
+            // Registrierungsformular sichtbar, wenn E-Mail nicht existiert
+            if (_emailChecked && !_emailExists) _buildRegisterForm(),
+
+            // Social Media Login Optionen nur sichtbar, wenn E-Mail nicht geprüft wurde
+            if (!_emailChecked) _buildSocialLogin(),
           ],
         ),
       ),
