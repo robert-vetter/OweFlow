@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'verification_phone.dart';
+import '../home.dart';
 
 class EmailVerificationScreen extends StatelessWidget {
   const EmailVerificationScreen({super.key});
@@ -34,10 +35,8 @@ class EmailVerificationScreen extends StatelessWidget {
             const SizedBox(height: 16),
             ElevatedButton(
               onPressed: () {
-                Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => const PhoneVerificationScreen()));
+                Navigator.push(context,
+                    MaterialPageRoute(builder: (context) => const HomePage()));
               },
               style: ElevatedButton.styleFrom(
                 minimumSize: const Size(double.infinity, 50),
