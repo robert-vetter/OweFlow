@@ -16,7 +16,7 @@ class _HomePageState extends State<HomePage> {
   int _selectedIndex = 0;
 
   // Eingeloggt oder nicht eingeloggt
-  final bool _isLoggedIn = true;
+  bool _isLoggedIn = true;
 
   /// Navigation zwischen BottomNavigationItems
   void _onItemTapped(int index) {
@@ -116,6 +116,7 @@ class _HomePageState extends State<HomePage> {
                       child: ListTile(
                         leading: const Icon(Icons.logout),
                         title: const Text('Logout'),
+                        onTap: () => _isLoggedIn = false,
                       ),
                     ),
                   ],
