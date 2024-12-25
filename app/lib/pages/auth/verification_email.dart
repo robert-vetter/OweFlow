@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'verification_phone.dart';
 import '../home.dart';
 
 class EmailVerificationScreen extends StatelessWidget {
