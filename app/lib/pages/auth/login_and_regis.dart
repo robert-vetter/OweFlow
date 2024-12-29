@@ -303,10 +303,10 @@ class EmailVerificationScreen extends StatefulWidget {
   final VoidCallback? onVerificationComplete;
 
   const EmailVerificationScreen({
-    Key? key,
+    super.key,
     required this.email,
     this.onVerificationComplete,
-  }) : super(key: key);
+  });
 
   @override
   _EmailVerificationScreenState createState() =>
@@ -418,9 +418,9 @@ class PhoneVerificationScreen extends StatefulWidget {
   final String phoneNumber;
 
   const PhoneVerificationScreen({
-    Key? key,
+    super.key,
     required this.phoneNumber,
-  }) : super(key: key);
+  });
 
   @override
   _PhoneVerificationScreenState createState() =>
@@ -542,6 +542,8 @@ class SuccessScreen extends StatelessWidget {
 }
 
 class ForgotPasswordScreen extends StatefulWidget {
+  const ForgotPasswordScreen({super.key});
+
   @override
   _ForgotPasswordScreenState createState() => _ForgotPasswordScreenState();
 }

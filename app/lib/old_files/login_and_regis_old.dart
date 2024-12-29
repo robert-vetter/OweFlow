@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'forgot_password.dart';
-import 'verification_email.dart';
+import '../pages/auth/forgot_password.dart';
+import '../pages/auth/verification_email.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 class EmailCheckScreen extends StatefulWidget {
