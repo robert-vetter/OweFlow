@@ -1,3 +1,4 @@
+import 'package:app/pages/auth/verification_email.dart';
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'dart:async';
@@ -19,17 +20,45 @@ class _EmailCheckScreenState extends State<EmailCheckScreen> {
   final TextEditingController _phoneController = TextEditingController();
   final TextEditingController _fullNameController = TextEditingController();
 
-  final _authService = AuthService(Supabase.instance.client);
+  final FocusNode _focusNodeMixedField = FocusNode();
 
   bool _isChecking = false;
   bool _emailExists = false;
   bool _showPasswordField = false;
   bool _isRegistering = false;
+  bool _isLogin = false;
   bool _showContinueButton = true;
   bool _loginRedirect = false;
+  bool _isFocusLostMixedField = true; // Flag, um den Fokusverlust zu verfolgen
 
   String? _inputError;
   String? _passwordError;
+
+  // Functions to handle focus loss (on focus change) of the mixed Input field
+  @override
+  void initState() {
+    super.initState();
+    _focusNodeMixedField.addListener(_onFocusChange);
+  }
+
+  @override
+  void dispose() {
+    _focusNodeMixedField.dispose();
+    super.dispose();
+  }
+
+  void _onFocusChange() {
+    if (!_focusNodeMixedField.hasFocus) {
+      // Wenn der Fokus verloren geht und die Funktion noch nicht aufgerufen wurde
+      if (!_isFocusLostMixedField) {
+        _isFocusLostMixedField = true; // Setze das Flag
+        _onLoginInputBlur(); // Funktion aufrufen
+      }
+    } else {
+      // Wenn der Fokus wieder erlangt wird, setzen Sie das Flag zurück
+      _isFocusLostMixedField = false;
+    }
+  }
 
   Future<void> _checkInput() async {
     final input = _inputController.text.trim();
@@ -47,14 +76,15 @@ class _EmailCheckScreenState extends State<EmailCheckScreen> {
     });
 
     try {
-      final emailUsed = await _authService.isEmailUsed(input);
-      final phoneUsed = await _authService.isPhoneUsed(input);
-      final usernameUsed = await _authService.isUsernameUsed(input);
+      final emailUsed = await isEmailUsed(input);
+      final phoneUsed = await isPhoneUsed(input);
+      final usernameUsed = await isUsernameUsed(input);
 
       if (emailUsed || phoneUsed || usernameUsed) {
         setState(() {
           _emailExists = true;
           _showPasswordField = true;
+          _isLogin = true;
           _isRegistering = false;
           _showContinueButton = false;
         });
@@ -62,6 +92,7 @@ class _EmailCheckScreenState extends State<EmailCheckScreen> {
         setState(() {
           _emailExists = false;
           _showPasswordField = false;
+          _isLogin = false;
           _isRegistering = true;
           _showContinueButton = false;
 
@@ -87,9 +118,9 @@ class _EmailCheckScreenState extends State<EmailCheckScreen> {
     if (_showPasswordField && !_isChecking) {
       final input = _inputController.text.trim();
       try {
-        final emailUsed = await _authService.isEmailUsed(input);
-        final phoneUsed = await _authService.isPhoneUsed(input);
-        final usernameUsed = await _authService.isUsernameUsed(input);
+        final emailUsed = await isEmailUsed(input);
+        final phoneUsed = await isPhoneUsed(input);
+        final usernameUsed = await isUsernameUsed(input);
 
         if (!emailUsed && !phoneUsed && !usernameUsed) {
           setState(() {
@@ -99,6 +130,7 @@ class _EmailCheckScreenState extends State<EmailCheckScreen> {
         } else {
           setState(() {
             _loginRedirect = false;
+            _showPasswordField = true;
           });
         }
       } catch (e) {
@@ -117,12 +149,17 @@ class _EmailCheckScreenState extends State<EmailCheckScreen> {
       return;
     }
 
-    final emailOrPhone = _emailController.text.isNotEmpty
-        ? _emailController.text
-        : _phoneController.text;
+    final logInput = _inputController.text.trim();
 
     try {
-      await _authService.login(emailOrPhone, _passwordController.text);
+      if (logInput.contains('@')) {
+        await loginWithEmail(logInput, _passwordController.text);
+      } else if (RegExp(r'^\d+$').hasMatch(logInput)) {
+        await loginWithPhone(logInput, _passwordController.text);
+      } else {
+        await loginWithUsername(logInput, _passwordController.text);
+      }
+
       _showMessage('Logged in successfully!');
       Navigator.popUntil(context, ModalRoute.withName('/'));
     } catch (e) {
@@ -138,9 +175,10 @@ class _EmailCheckScreenState extends State<EmailCheckScreen> {
     final username = _usernameController.text.trim();
     final phone = _phoneController.text.trim();
     final fullName = _fullNameController.text.trim();
+    final verfifyPhone = phone.isEmpty ? false : true;
 
     try {
-      await _authService.register(
+      await register(
         email: email,
         password: password,
         username: username,
@@ -150,10 +188,17 @@ class _EmailCheckScreenState extends State<EmailCheckScreen> {
 
       _showMessage('Registration successful!');
       Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(
-            builder: (context) => EmailVerificationScreen(email: email)),
-      );
+          context,
+          MaterialPageRoute(
+
+              //builder: (context) => EmailVerificationScreen(email: email)),
+              builder: (context) => EmailVerifyPageWidget(
+                    email: email,
+                    password: password,
+                    redirectToPhoneVerify: verfifyPhone,
+                    phoneNumber: phone,
+                  )) //(email: email)),
+          );
     } catch (e) {
       _showMessage(e.toString());
     }
@@ -168,7 +213,11 @@ class _EmailCheckScreenState extends State<EmailCheckScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(_isRegistering ? 'Sign Up' : 'Login'),
+        title: Text(_isRegistering
+            ? 'Sign Up'
+            : _isLogin
+                ? 'Login'
+                : 'Welcome - Please enter your Data'),
         centerTitle: true,
       ),
       body: SingleChildScrollView(
@@ -176,15 +225,17 @@ class _EmailCheckScreenState extends State<EmailCheckScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            if (!_isRegistering || _showContinueButton) ...[
+            if (!_isRegistering && !_isLogin) ...[
               // Gemischtes Feld mit Eingabe (Email, Benutzername, oder Telefonnummer)
               TextField(
                 controller: _inputController,
+                focusNode: _focusNodeMixedField,
                 decoration: InputDecoration(
                   labelText: 'Email, Username, or Phone',
                   border: const OutlineInputBorder(),
                   errorText: _inputError,
                 ),
+                autocorrect: false,
                 onEditingComplete: _onLoginInputBlur,
               ),
               const SizedBox(height: 16),
@@ -194,26 +245,41 @@ class _EmailCheckScreenState extends State<EmailCheckScreen> {
                   child: const Text('Continue'),
                 ),
             ],
-            if (_showPasswordField) ...[
-              // Passwortfeld (immer sichtbar)
+            // Der Login/Registrierungs Button
+            if (_isLogin) ...[
               TextField(
-                controller: _passwordController,
+                controller: _inputController,
+                focusNode: _focusNodeMixedField,
                 decoration: InputDecoration(
-                  labelText: 'Password',
+                  labelText: 'Email, Username, or Phone',
                   border: const OutlineInputBorder(),
-                  errorText: _passwordError,
+                  errorText: _inputError,
                 ),
-                obscureText: true,
+                autocorrect: false,
+                onEditingComplete: _onLoginInputBlur,
               ),
-              const SizedBox(height: 16),
-              // Der Login/Registrierungs Button
+              if (_showPasswordField) ...[
+                // Passwortfeld (immer sichtbar)
+                TextField(
+                  controller: _passwordController,
+                  decoration: InputDecoration(
+                    labelText: 'Password',
+                    border: const OutlineInputBorder(),
+                    errorText: _passwordError,
+                  ),
+                  obscureText: true,
+                ),
+                const SizedBox(height: 16),
+              ],
               ElevatedButton(
                 onPressed: _loginRedirect
                     ? () {
                         // Weiterleitung zur Registrierungsseite
                         setState(() {
+                          _showPasswordField = false;
                           _isRegistering = true;
                           _showContinueButton = false;
+                          _isLogin = false;
                           _inputController.clear();
                         });
                       }
@@ -298,233 +364,6 @@ class _EmailCheckScreenState extends State<EmailCheckScreen> {
   }
 }
 
-class EmailVerificationScreen extends StatefulWidget {
-  final String email;
-  final VoidCallback? onVerificationComplete;
-
-  const EmailVerificationScreen({
-    Key? key,
-    required this.email,
-    this.onVerificationComplete,
-  }) : super(key: key);
-
-  @override
-  _EmailVerificationScreenState createState() =>
-      _EmailVerificationScreenState();
-}
-
-class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
-  final TextEditingController _otpController = TextEditingController();
-  late final AuthService _authService;
-
-  bool _isChecking = false;
-  bool _isOtpSent = false;
-  bool _isVerifyingOtp = false;
-
-  @override
-  void initState() {
-    super.initState();
-    _authService = AuthService(Supabase.instance.client);
-    _sendOtp();
-  }
-
-  Future<void> _sendOtp() async {
-    setState(() => _isChecking = true);
-
-    final success = await _authService.sendEmailVerification(widget.email);
-    if (success) {
-      setState(() => _isOtpSent = true);
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('OTP sent to your email')),
-      );
-    } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Failed to send OTP')),
-      );
-    }
-
-    setState(() => _isChecking = false);
-  }
-
-  Future<void> _verifyOtp() async {
-    final otp = _otpController.text.trim();
-
-    if (otp.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Please enter the OTP')),
-      );
-      return;
-    }
-
-    setState(() => _isVerifyingOtp = true);
-
-    final success = await _authService.verifyEmailOtp(widget.email, otp);
-    if (success) {
-      ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Email verified successfully')));
-      if (widget.onVerificationComplete != null) {
-        widget.onVerificationComplete!();
-      } else {
-        Navigator.pop(context);
-      }
-    } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Failed to verify OTP')),
-      );
-    }
-
-    setState(() => _isVerifyingOtp = false);
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Email Verification'),
-        centerTitle: true,
-      ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            if (_isOtpSent) ...[
-              TextField(
-                controller: _otpController,
-                decoration: const InputDecoration(
-                  labelText: 'Enter OTP',
-                  border: OutlineInputBorder(),
-                ),
-              ),
-              const SizedBox(height: 16),
-              ElevatedButton(
-                onPressed: _isVerifyingOtp ? null : _verifyOtp,
-                child: const Text('Verify OTP'),
-              ),
-            ] else ...[
-              const Text(
-                'Sending OTP to your email...',
-                textAlign: TextAlign.center,
-              ),
-            ],
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-class PhoneVerificationScreen extends StatefulWidget {
-  final String phoneNumber;
-
-  const PhoneVerificationScreen({
-    Key? key,
-    required this.phoneNumber,
-  }) : super(key: key);
-
-  @override
-  _PhoneVerificationScreenState createState() =>
-      _PhoneVerificationScreenState();
-}
-
-class _PhoneVerificationScreenState extends State<PhoneVerificationScreen> {
-  final TextEditingController _otpController = TextEditingController();
-  late final AuthService _authService;
-
-  bool _isChecking = false;
-  bool _isOtpSent = false;
-  bool _isVerifyingOtp = false;
-
-  @override
-  void initState() {
-    super.initState();
-    _authService = AuthService(Supabase.instance.client);
-    _sendOtp();
-  }
-
-  Future<void> _sendOtp() async {
-    setState(() => _isChecking = true);
-
-    final success =
-        await _authService.sendPhoneVerification(widget.phoneNumber);
-    if (success) {
-      setState(() => _isOtpSent = true);
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('OTP sent to your phone')),
-      );
-    } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Failed to send OTP')),
-      );
-    }
-
-    setState(() => _isChecking = false);
-  }
-
-  Future<void> _verifyOtp() async {
-    final otp = _otpController.text.trim();
-
-    if (otp.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Please enter the OTP')),
-      );
-      return;
-    }
-
-    setState(() => _isVerifyingOtp = true);
-
-    final success = await _authService.verifyPhoneOtp(widget.phoneNumber, otp);
-    if (success) {
-      ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Phone verified successfully')));
-      Navigator.pop(context);
-    } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Failed to verify OTP')),
-      );
-    }
-
-    setState(() => _isVerifyingOtp = false);
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Phone Verification'),
-        centerTitle: true,
-      ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            if (_isOtpSent) ...[
-              TextField(
-                controller: _otpController,
-                decoration: const InputDecoration(
-                  labelText: 'Enter OTP',
-                  border: OutlineInputBorder(),
-                ),
-              ),
-              const SizedBox(height: 16),
-              ElevatedButton(
-                onPressed: _isVerifyingOtp ? null : _verifyOtp,
-                child: const Text('Verify OTP'),
-              ),
-            ] else ...[
-              const Text(
-                'Sending OTP to your phone...',
-                textAlign: TextAlign.center,
-              ),
-            ],
-          ],
-        ),
-      ),
-    );
-  }
-}
-
 class SuccessScreen extends StatelessWidget {
   const SuccessScreen({super.key});
 
@@ -542,13 +381,14 @@ class SuccessScreen extends StatelessWidget {
 }
 
 class ForgotPasswordScreen extends StatefulWidget {
+  const ForgotPasswordScreen({super.key});
+
   @override
   _ForgotPasswordScreenState createState() => _ForgotPasswordScreenState();
 }
 
 class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
   final TextEditingController _emailController = TextEditingController();
-  final _authService = AuthService(Supabase.instance.client);
 
   String? _errorMessage;
   bool _isProcessing = false;
@@ -569,7 +409,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
     });
 
     try {
-      await _authService.sendPasswordResetEmail(email);
+      await sendPasswordResetEmail(email);
       _showMessage('Password reset email sent. Please check your inbox.');
       Navigator.pop(context); // Zurück zum Login-Bildschirm
     } catch (e) {

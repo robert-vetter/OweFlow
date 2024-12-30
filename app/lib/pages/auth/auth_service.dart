@@ -1,147 +1,230 @@
 import 'package:supabase_flutter/supabase_flutter.dart';
 
-class AuthService {
-  final SupabaseClient _client;
-
-  AuthService(this._client);
-
-  Future<bool> isEmailUsed(String email) async {
-    try {
-      final response =
-          await _client.rpc('is_email_used', params: {'email_to_check': email});
-      return response as bool;
-    } catch (e) {
-      throw Exception('Error checking email: $e');
-    }
-  }
-
-  Future<bool> isPhoneUsed(String phone) async {
-    try {
-      final response =
-          await _client.rpc('is_phone_used', params: {'phone_to_check': phone});
-      return response as bool;
-    } catch (e) {
-      throw Exception('Error checking phone: $e');
-    }
-  }
-
-  Future<bool> isUsernameUsed(String username) async {
-    try {
-      final response = await _client
-          .rpc('is_username_used', params: {'username_to_check': username});
-      return response as bool;
-    } catch (e) {
-      throw Exception('Error checking username: $e');
-    }
-  }
-
-  //Verifikation from phone number and email
-  // Send OTP for email verification
-  Future<bool> sendEmailVerification(String email) async {
-    try {
-      await _client.auth.signInWithOtp(email: email);
-      return true;
-    } catch (e) {
-      print('Failed to send email OTP: $e');
-      return false;
-    }
-  }
-
-  // Verify email with OTP
-  Future<bool> verifyEmailOtp(String email, String otp) async {
-    try {
-      final response = await _client.auth.verifyOTP(
-        type: OtpType.email,
-        token: otp,
-        email: email,
-      );
-      return response.session != null;
-    } catch (e) {
-      print('Failed to verify email OTP: $e');
-      return false;
-    }
-  }
-
-  // Send OTP for phone verification
-  Future<bool> sendPhoneVerification(String phone) async {
-    try {
-      await _client.auth.signInWithOtp(phone: phone);
-      return true;
-    } catch (e) {
-      print('Failed to send phone OTP: $e');
-      return false;
-    }
-  }
-
-  // Verify phone with OTP
-  Future<bool> verifyPhoneOtp(String phone, String otp) async {
-    try {
-      final response = await _client.auth.verifyOTP(
-        type: OtpType.sms,
-        token: otp,
-        phone: phone,
-      );
-      return response.session != null;
-    } catch (e) {
-      print('Failed to verify phone OTP: $e');
-      return false;
-    }
-  }
-
-  //passwort vergessen
-  Future<void> sendPasswordResetEmail(String email) async {
-    try {
-      final response = await _client.auth.resetPasswordForEmail(email);
-    } catch (e) {
-      throw Exception('Error sending password reset email: $e');
-    }
-  }
-
-  Future<void> login(String emailOrPhone, String password) async {
-    try {
-      final response = await _client.auth.signInWithPassword(
-        email: emailOrPhone,
-        password: password,
-      );
-
-      if (response.user == null) {
-        throw Exception('Invalid email or password');
-      }
-    } catch (e) {
-      throw Exception('Login failed: $e');
-    }
-  }
-
-  Future<void> register({
-    required String email,
-    required String password,
-    required String username,
-    required String fullName,
-    String? phone,
-  }) async {
-    try {
-      if (await isUsernameUsed(username)) {
-        throw Exception('Username is already taken');
-      }
-      if (await isEmailUsed(email)) {
-        throw Exception('Email is already in use');
-      }
-
-      final response = await _client.auth.signUp(
-        email: email,
-        password: password,
-        data: {
-          'username': username,
-          'full_name': fullName,
-          'phone': phone,
-        },
-      );
-
-      if (response.user == null) {
-        throw Exception('Registration failed');
-      }
-    } catch (e) {
-      throw Exception('Registration failed: $e');
-    }
+Future<bool> isEmailUsed(String email) async {
+  try {
+    final response = await Supabase.instance.client
+        .rpc('is_email_used', params: {'email_to_check': email});
+    return response as bool;
+  } catch (e) {
+    throw Exception('Error checking email: $e');
   }
 }
+
+Future<bool> isPhoneUsed(String phone) async {
+  try {
+    final response = await Supabase.instance.client
+        .rpc('is_phone_used', params: {'phone_to_check': phone});
+    return response as bool;
+  } catch (e) {
+    throw Exception('Error checking phone: $e');
+  }
+}
+
+Future<bool> isUsernameUsed(String username) async {
+  try {
+    final response = await Supabase.instance.client
+        .rpc('is_username_used', params: {'username_to_check': username});
+    return response as bool;
+  } catch (e) {
+    throw Exception('Error checking username: $e');
+  }
+}
+
+//passwort vergessen
+Future<void> sendPasswordResetEmail(String email) async {
+  try {
+    final response =
+        await Supabase.instance.client.auth.resetPasswordForEmail(email);
+  } catch (e) {
+    throw Exception('Error sending password reset email: $e');
+  }
+}
+
+Future<void> loginWithEmail(String email, String password) async {
+  try {
+    final response = await Supabase.instance.client.auth.signInWithPassword(
+      email: email,
+      password: password,
+    );
+
+    if (response.user == null) {
+      throw Exception('Invalid email or password');
+    }
+  } catch (e) {
+    throw Exception('Login failed: $e');
+  }
+}
+
+Future<void> loginWithPhone(String phone, String password) async {
+  try {
+    final response = await Supabase.instance.client.auth.signInWithPassword(
+      phone: phone,
+      password: password,
+    );
+
+    if (response.user == null) {
+      throw Exception('Invalid email or password');
+    }
+  } catch (e) {
+    throw Exception('Login failed: $e');
+  }
+}
+
+//Login via Username and Password (Username + Pass --> Email + Pass)
+Future<void> loginWithUsername(String username, String password) async {
+  try {
+    // Schritt 1: Rufe die E-Mail-Adresse über die benutzerdefinierte Supabase-Funktion ab
+    final response = await Supabase.instance.client
+        .rpc('get_email_by_username', params: {'username': username});
+
+    if (response == null) {
+      throw Exception('Username not found');
+    }
+
+    final email = response as String;
+
+    // Schritt 2: Melde den Benutzer mit der E-Mail-Adresse und dem Passwort an
+    final loginResponse =
+        await Supabase.instance.client.auth.signInWithPassword(
+      email: email,
+      password: password,
+    );
+
+    if (loginResponse.user == null) {
+      throw Exception('Invalid username or password');
+    }
+  } catch (e) {
+    throw Exception('Login failed: $e');
+  }
+}
+
+//register
+Future<void> register({
+  required String email,
+  required String password,
+  required String username,
+  required String fullName,
+  String? phone,
+}) async {
+  try {
+    if (await isUsernameUsed(username)) {
+      throw Exception('Username is already taken');
+    }
+    if (await isEmailUsed(email)) {
+      throw Exception('Email is already in use');
+    }
+
+    final response = await Supabase.instance.client.auth.signUp(
+      email: email,
+      password: password,
+      data: {
+        'username': username,
+        'full_name': fullName,
+        'phone': phone,
+      },
+    );
+
+    if (response.user == null) {
+      throw Exception('Registration failed');
+    }
+  } catch (e) {
+    throw Exception('Registration failed: $e');
+  }
+}
+
+//verify email address via email (OTP- Verrify code via email)
+Future<bool> verifyEmailWithToken(
+  String email,
+  String? token,
+) async {
+  // Add your function code here!
+  // instantiate Supabase client
+  final supabase = Supabase.instance.client;
+
+  try {
+    // call the supabase verifyOTP function
+    // if successful, a response with the user and session is returned
+    final AuthResponse res = await supabase.auth.verifyOTP(
+      type: OtpType.signup,
+      token: token ?? " ",
+      email: email,
+    );
+
+    // return true if session is not null (i.e. user has signed in)
+    return res.session != null;
+  } on AuthException catch (e) {
+    // catch any authenticatino errors and print them to the console
+    print(e.message);
+    return false;
+  } catch (error) {
+    // catch any other errors
+    print(error);
+    return false;
+  }
+}
+
+//sign up via email address and password
+Future<String?> signUpWithEmail(String email, String password) async {
+  // Add your function code here!
+  try {
+    final supabase = Supabase.instance.client;
+
+    final AuthResponse res = await supabase.auth.signUp(
+      email: email,
+      password: password,
+    );
+    return null;
+  } on AuthException catch (e) {
+    return (e.message);
+  }
+}
+
+//verification of the phone number via sms
+Future<bool> verifyPhoneWithToken(
+  String phone,
+  String? token,
+) async {
+  // Add your function code here!
+  // instantiate Supabase client
+  final supabase = Supabase.instance.client;
+
+  try {
+    // call the supabase verifyOTP function
+    // if successful, a response with the user and session is returned
+    final AuthResponse res = await supabase.auth.verifyOTP(
+      type: OtpType.signup,
+      token: token ?? " ",
+      phone: phone,
+    );
+
+    // return true if session is not null (i.e. user has signed in)
+    return res.session != null;
+  } on AuthException catch (e) {
+    // catch any authenticatino errors and print them to the console
+    print(e.message);
+    return false;
+  } catch (error) {
+    // catch any other errors
+    print(error);
+    return false;
+  }
+}
+
+// sign up via phone number and password
+Future<String?> signUpWithPhone(String phone, String password) async {
+  // Add your function code here!
+
+  try {
+    final supabase = Supabase.instance.client;
+
+    final AuthResponse res = await supabase.auth.signUp(
+      phone: phone,
+      password: password,
+    );
+    return null;
+  } on AuthException catch (e) {
+    return (e.message);
+  }
+}
+
+//######### Social Login ########

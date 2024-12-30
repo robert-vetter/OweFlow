@@ -16,7 +16,7 @@ class _HomePageState extends State<HomePage> {
   int _selectedIndex = 0;
 
   // Eingeloggt oder nicht eingeloggt
-  bool _isLoggedIn = true;
+  bool _isLoggedIn = false;
 
   /// Navigation zwischen BottomNavigationItems
   void _onItemTapped(int index) {
