@@ -40,7 +40,7 @@ class _PhoneVerifyPageWidgetState extends State<PhoneVerifyPageWidget> {
   // On page load action
   Future<void> _confirm() async {
     _isVerified = await verifyPhoneWithToken(
-      widget.email!,
+      widget.phoneNumber!,
       _pinCodeController.text,
     );
     if (_isVerified == true) {

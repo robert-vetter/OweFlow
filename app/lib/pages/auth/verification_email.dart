@@ -6,6 +6,10 @@ import 'package:flutter/scheduler.dart'; // Import for SchedulerBinding
 import 'pin_code_fields/pin_code_fields.dart';
 import 'package:flutter/material.dart';
 
+void printLog(String text) {
+  print(text);
+}
+
 class EmailVerifyPageWidget extends StatefulWidget {
   const EmailVerifyPageWidget({
     super.key,
@@ -40,6 +44,11 @@ class _EmailVerifyPageWidgetState extends State<EmailVerifyPageWidget> {
 
   // On page load action
   Future<void> _confirm() async {
+    _isVerified = await verifyEmailWithToken(
+      widget.email!,
+      _pinCodeController.text,
+    );
+
     if (_isVerified == true) {
       if (widget.redirectToPhoneVerify!) {
         Navigator.push(
