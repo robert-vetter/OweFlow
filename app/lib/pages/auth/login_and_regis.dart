@@ -1,6 +1,5 @@
 import 'package:app/pages/auth/verification_email.dart';
 import 'package:flutter/material.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
 import 'dart:async';
 
 import 'auth_service.dart'; // Enthält die implementierte AuthService-Klasse

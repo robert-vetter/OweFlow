@@ -17,11 +17,11 @@ torch.backends.cudnn.benchmark = True
 torch.backends.cudnn.enabled = True
 
 # --- Whisper-Modell laden ---
-model = whisper.load_model('small', device=device)  # Alternativen: 'base', 'medium', 'large'
+model = whisper.load_model('base', device=device)  # Alternativen: 'base', 'medium', 'large'
 
 # --- Audiodatei vorbereiten ---
 current_dir = os.path.dirname(os.path.abspath(__file__))
-audio_file = os.path.join(current_dir, 'test2.mp3')
+audio_file = os.path.join(current_dir, 'test1.mp3')
 text_file = os.path.join(current_dir, 'full_text.txt')
 
 print("🎙️ Starting to transcribe...")
