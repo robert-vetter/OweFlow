@@ -74,9 +74,17 @@ class _HomePageState extends State<HomePage> {
         );
         break;
       case 'logout':
-        // Logout Logic
+        setState(() {
+          _isLoggedIn = false; // Benutzer wird ausgeloggt
+          _showMessage("Logged out successfully!");
+        });
         break;
     }
+  }
+
+  void _showMessage(String message) {
+    ScaffoldMessenger.of(context)
+        .showSnackBar(SnackBar(content: Text(message)));
   }
 
   /// 📌 **Gemeinsame Scaffold-Struktur**
@@ -116,19 +124,29 @@ class _HomePageState extends State<HomePage> {
                       child: ListTile(
                         leading: const Icon(Icons.logout),
                         title: const Text('Logout'),
-                        onTap: () => _isLoggedIn = false,
+                        onTap: () {
+                          setState(() {
+                            _isLoggedIn = false; // Benutzer wird ausgeloggt
+                          });
+                        },
                       ),
                     ),
                   ],
                 )
               : TextButton(
-                  onPressed: () {
-                    Navigator.push(
+                  onPressed: () async {
+                    final result = await Navigator.push(
                       context,
                       MaterialPageRoute(
                         builder: (context) => const EmailCheckScreen(),
                       ),
                     );
+
+                    if (result == true) {
+                      setState(() {
+                        _isLoggedIn = true; // Benutzer ist jetzt eingeloggt
+                      });
+                    }
                   },
                   child: const Text(
                     'Get Started',

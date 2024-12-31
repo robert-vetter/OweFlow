@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "400917952970",
+    "project_id": "oweflow-9cbfb",
+    "storage_bucket": "oweflow-9cbfb.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:400917952970:android:00918829314ddd74a0f733",
+        "android_client_info": {
+          "package_name": "com.ex"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAe3Wf88uGSV6GNmEF38giNG4lagt5WWi4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:400917952970:android:717b1417e8c17acea0f733",
+        "android_client_info": {
+          "package_name": "com.example.app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAe3Wf88uGSV6GNmEF38giNG4lagt5WWi4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

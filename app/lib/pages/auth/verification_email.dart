@@ -1,7 +1,6 @@
-import 'dart:ui';
 import 'package:app/pages/auth/auth_service.dart';
 import 'package:app/pages/home.dart';
-import 'package:flutter/scheduler.dart'; // Import for SchedulerBinding
+// Import for SchedulerBinding
 
 import 'pin_code_fields/pin_code_fields.dart';
 import 'package:flutter/material.dart';
