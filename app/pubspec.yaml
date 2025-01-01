@@ -42,6 +42,11 @@ dependencies:
 dev_dependencies:
   flutter_test:
     sdk: flutter
+  flutter_sound: ^9.2.13 # Für Audioaufnahme
+  permission_handler: ^11.0.1 # Für Mikrofon-Berechtigung
+  http: ^1.1.2 # Für HTTP-Anfragen
+  speech_to_text: ^6.3.0
+
 
   # The "flutter_lints" package below contains a set of recommended lints to
   # encourage good coding practices. The lint set provided by the package is
