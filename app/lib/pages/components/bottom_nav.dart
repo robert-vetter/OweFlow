@@ -16,7 +16,8 @@ class CustomBottomNavigationBar extends StatelessWidget {
       type: BottomNavigationBarType.fixed,
       items: const [
         BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
-        BottomNavigationBarItem(icon: Icon(Icons.group), label: 'Groups'),
+        BottomNavigationBarItem(
+            icon: Icon(Icons.group), label: 'Friends & Groups'),
         BottomNavigationBarItem(
             icon: Icon(Icons.add_circle, size: 40.0), label: 'Add'),
         BottomNavigationBarItem(icon: Icon(Icons.bar_chart), label: 'Stats'),

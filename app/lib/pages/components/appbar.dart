@@ -16,11 +16,12 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
   @override
   Widget build(BuildContext context) {
     return AppBar(
+      automaticallyImplyLeading: false, // Entfernt den Standard-Back-Button
       actions: [
         isLoggedIn
             ? PopupMenuButton<String>(
                 icon: const Icon(Icons.person),
-                onSelected: onDropdownSelected, // Hier wird der Wert übergeben
+                onSelected: onDropdownSelected,
                 itemBuilder: (BuildContext context) => [
                   const PopupMenuItem(
                     value: 'profile',
