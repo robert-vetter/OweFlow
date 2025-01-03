@@ -223,14 +223,15 @@ class _EmailCheckScreenState extends State<EmailCheckScreen> {
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16.0),
-        child: Wrap(
-          direction:
-              Axis.vertical, // Vertikale Ausrichtung, ein Element pro Zeile
-          spacing: 0, // Kein horizontaler Abstand
-          runSpacing: 10, // Vertikaler Abstand, anpassbar je nach Bedarf
+        child:
+            // Wrap(
+            //  direction:
+            //      Axis.vertical, // Vertikale Ausrichtung, ein Element pro Zeile
+            //  spacing: 0, // Kein horizontaler Abstand
+            //  runSpacing: 10, // Vertikaler Abstand, anpassbar je nach Bedarf
 
-          //Column(
-          //  crossAxisAlignment: CrossAxisAlignment.stretch,
+            Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             if (!_isRegistering && !_isLogin) ...[
               // Gemischtes Feld mit Eingabe (Email, Benutzername, oder Telefonnummer)
