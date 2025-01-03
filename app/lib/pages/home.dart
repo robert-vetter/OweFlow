@@ -140,12 +140,12 @@ class _HomePageState extends State<HomePage> {
         onPressed: _onMicrophonePressed,
         backgroundColor:
             _isRecording ? Colors.red : Theme.of(context).primaryColor,
+        tooltip: _isRecording ? 'Stoppen' : 'Aufnahme starten',
         child: Icon(
           _isRecording ? Icons.stop : Icons.mic,
           size: 30,
           color: Colors.white,
         ),
-        tooltip: _isRecording ? 'Stoppen' : 'Aufnahme starten',
       );
     }
     return null; // Kein Button auf anderen Seiten anzeigen
