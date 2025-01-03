@@ -26,7 +26,7 @@ model = whisper.load_model('turbo').to(device)
 
 # --- Audiodatei vorbereiten ---
 current_dir = os.path.dirname(os.path.abspath(__file__))
-audio_file = os.path.join(current_dir, 'test1.mp3')
+audio_file = os.path.join(current_dir, 'test3.mp3')
 text_file = os.path.join(current_dir, 'full_text.txt')
 
 print("🎙️ Starting to transcribe...")

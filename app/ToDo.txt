@@ -1,1 +1,12 @@
 -'Get Started' nur da, wenn nicht eingeloggt -> sonst Profil-Icon
+
+Mit den Basic Features starten!
+-Freunde und Gruppen
+-automatisierte Erinnerungen
+
+Alleinstellungsmerkmale (Unique-Selling-Points - USPs)
+-Integration von Nicht-Nutzern über QR-Codes und Links, Gastmodus -> bei ALLEN anderen Apps braucht man die App!
+-Integration von Zahlungsdienstleistern (bspw. PayPal)
+-integrierter Chat
+-(Sprachsteuerung)
+-(KI-gestützte Kostenaufteilung)

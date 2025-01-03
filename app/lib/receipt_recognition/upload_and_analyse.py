@@ -78,7 +78,7 @@ def get_receipt_result(token, api_key, max_retries=30, retry_interval=2):
 
 def main():
     current_dir = os.path.dirname(os.path.abspath(__file__))
-    image_path = os.path.join(current_dir, 'receipts_imgs', 'receipt2.jpg')
+    image_path = os.path.join(current_dir, 'receipts_imgs', 'receipt1.jpeg')
 
     token = upload_receipt(API_KEY, image_path)
     result = get_receipt_result(token, API_KEY)
