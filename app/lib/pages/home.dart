@@ -1,10 +1,14 @@
-import 'package:app/pages/settings.dart';
 import 'package:flutter/material.dart';
-import 'auth/login_and_regis.dart';
+import 'add_expense.dart';
 import 'groups.dart';
 import 'statistics.dart';
 import 'payments.dart';
+import 'settings.dart';
+import 'components/appbar.dart';
+import 'components/bottom_nav.dart';
+import 'auth/login_and_regis.dart';
 
+/// 🏠 **HomePage**: Hauptseite der App mit Navigation, Zustand und Mikrofonintegration.
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
 
@@ -12,16 +16,18 @@ class HomePage extends StatefulWidget {
   State<HomePage> createState() => _HomePageState();
 }
 
+// -----------------------------------
+// HomePage State-Logik
+// -----------------------------------
 class _HomePageState extends State<HomePage> {
   int _selectedIndex = 0;
-
-  // Eingeloggt oder nicht eingeloggt
   bool _isLoggedIn = false;
+  bool _isRecording = false;
 
-  /// Navigation zwischen BottomNavigationItems
+  /// 🧭 Navigation zwischen BottomNavigationItems
   void _onItemTapped(int index) {
     if (index == 2) {
-      _showQuickActions();
+      _navigateToAddExpense();
     } else {
       setState(() {
         _selectedIndex = index;
@@ -29,44 +35,18 @@ class _HomePageState extends State<HomePage> {
     }
   }
 
-  /// Quick Actions Modal
-  void _showQuickActions() {
-    showModalBottomSheet(
-      context: context,
-      builder: (BuildContext context) {
-        return Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            ListTile(
-              leading: const Icon(Icons.add),
-              title: const Text('Add Expense'),
-              onTap: () => Navigator.pop(context),
-            ),
-            ListTile(
-              leading: const Icon(Icons.group_add),
-              title: const Text('Create Group'),
-              onTap: () => Navigator.pop(context),
-            ),
-            ListTile(
-              leading: const Icon(Icons.account_balance),
-              title: const Text('Settle Debt'),
-              onTap: () => Navigator.pop(context),
-            ),
-          ],
-        );
-      },
+  /// ➕ Direkt zur AddExpense-Seite navigieren
+  void _navigateToAddExpense() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => const AddExpenseScreen()),
     );
   }
 
-  /// Dropdown Menü für eingeloggte Benutzer
+  /// 👤 Dropdown Menü für eingeloggte Benutzer
   void _showDropdownMenu(String value) {
     switch (value) {
       case 'profile':
-        Navigator.push(
-          context,
-          MaterialPageRoute(builder: (context) => const SettingsPage()),
-        );
-        break;
       case 'settings':
         Navigator.push(
           context,
@@ -74,88 +54,62 @@ class _HomePageState extends State<HomePage> {
         );
         break;
       case 'logout':
-        // Logout Logic
+        setState(() {
+          _isLoggedIn = false;
+          _showMessage("Logged out successfully!");
+        });
         break;
     }
   }
 
-  /// 📌 **Gemeinsame Scaffold-Struktur**
-  Widget _buildSharedContent() {
-    return Scaffold(
-      appBar: AppBar(
-        leading: !_isLoggedIn
-            ? IconButton(
-                icon: const Icon(Icons.menu),
-                onPressed: _openMenu,
-              )
-            : null,
-        actions: [
-          _isLoggedIn
-              ? PopupMenuButton<String>(
-                  icon: const Icon(Icons.person),
-                  onSelected: _showDropdownMenu,
-                  itemBuilder: (BuildContext context) =>
-                      <PopupMenuEntry<String>>[
-                    PopupMenuItem<String>(
-                      value: 'profile',
-                      child: ListTile(
-                        leading: const Icon(Icons.account_circle),
-                        title: const Text('Profile'),
-                      ),
-                    ),
-                    PopupMenuItem<String>(
-                      value: 'settings',
-                      child: ListTile(
-                        leading: const Icon(Icons.settings),
-                        title: const Text('Settings'),
-                      ),
-                    ),
-                    const PopupMenuDivider(),
-                    PopupMenuItem<String>(
-                      value: 'logout',
-                      child: ListTile(
-                        leading: const Icon(Icons.logout),
-                        title: const Text('Logout'),
-                        onTap: () => _isLoggedIn = false,
-                      ),
-                    ),
-                  ],
-                )
-              : TextButton(
-                  onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => const EmailCheckScreen(),
-                      ),
-                    );
-                  },
-                  child: const Text(
-                    'Get Started',
-                    style: TextStyle(color: Colors.black),
-                  ),
-                ),
-        ],
+  /// 📲 Login-Logik
+  void _navigateToLogin() async {
+    final result = await Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => const EmailCheckScreen()),
+    );
+
+    if (result == true) {
+      setState(() {
+        _isLoggedIn = true;
+        _showMessage("Successfully logged in!");
+      });
+    }
+  }
+
+  void _showMessage(String message) {
+    ScaffoldMessenger.of(context)
+        .showSnackBar(SnackBar(content: Text(message)));
+  }
+
+  /// 🎤 Mikrofon-Button gedrückt
+  void _onMicrophonePressed() {
+    setState(() {
+      _isRecording = !_isRecording;
+    });
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(
+          _isRecording ? '🎙️ Aufnahme gestartet...' : '🛑 Aufnahme gestoppt.',
+        ),
       ),
-      body: _buildContent(),
-      bottomNavigationBar: _buildNavigationBar(),
     );
   }
 
-  /// 📌 **Inhaltsanzeige für beide Zustände**
+  /// 📌 Inhaltsanzeige basierend auf Navigation
   Widget _buildContent() {
     final List<Widget> loggedInPages = [
-      const HomeScreen(),
+      _buildHomeContent(),
       const GroupsPage(),
-      const Placeholder(), // Placeholder for Quick Action Modal
+      const Placeholder(), // Placeholder für Add Expense
       const StatisticsPage(),
       const PaymentsPage(),
     ];
 
     final List<Widget> loggedOutPages = [
-      const HomeScreen(),
+      _buildHomeContent(),
       const GroupsPage(),
-      const Placeholder(), // Placeholder for Quick Action Modal
+      const Placeholder(),
       const StatisticsPage(),
       const Text('Payments (Login Required)'),
     ];
@@ -166,74 +120,270 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  /// 📌 **Gemeinsame BottomNavigationBar**
-  Widget _buildNavigationBar() {
-    return BottomNavigationBar(
-      type: BottomNavigationBarType.fixed,
-      items: const [
-        BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
-        BottomNavigationBarItem(icon: Icon(Icons.group), label: 'Groups'),
-        BottomNavigationBarItem(
-            icon: Icon(Icons.add_circle, size: 40.0), label: 'Add'),
-        BottomNavigationBarItem(icon: Icon(Icons.bar_chart), label: 'Stats'),
-        BottomNavigationBarItem(
-            icon: Icon(Icons.attach_money), label: 'Payments'),
-      ],
-      currentIndex: _selectedIndex,
-      selectedItemColor: Colors.blue,
-      unselectedItemColor: Colors.grey,
-      onTap: _onItemTapped,
-    );
-  }
-
-  /// 📌 **Menü für nicht eingeloggte Benutzer**
-  void _openMenu() {
-    showModalBottomSheet(
-      context: context,
-      builder: (BuildContext context) {
-        return ListView(
-          padding: const EdgeInsets.all(16.0),
-          children: [
-            ListTile(
-              leading: const Icon(Icons.settings),
-              title: const Text('Settings'),
-              onTap: () {},
-            ),
-            ListTile(
-              leading: const Icon(Icons.help),
-              title: const Text('Help & Support'),
-              onTap: () {},
-            ),
-            ListTile(
-              leading: const Icon(Icons.info),
-              title: const Text('About'),
-              onTap: () {},
-            ),
-          ],
-        );
-      },
-    );
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return _buildSharedContent();
-  }
-}
-
-// -----------------------------------
-// HomeScreen Widget
-// -----------------------------------
-class HomeScreen extends StatelessWidget {
-  const HomeScreen({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return const Center(
-      child: Text(
-        'Home',
-        style: TextStyle(fontSize: 20),
+  /// 🏠 Inhalt der Startseite
+  Widget _buildHomeContent() {
+    return const Scaffold(
+      body: Center(
+        child: Text(
+          'This is the Home Page',
+          style: TextStyle(fontSize: 20),
+        ),
       ),
     );
   }
+
+  /// 🎤 Zeige FloatingActionButton nur auf der Home-Seite
+  Widget? _buildFloatingActionButton() {
+    if (_selectedIndex == 0) {
+      return FloatingActionButton(
+        heroTag: 'home_microphone_button',
+        onPressed: _onMicrophonePressed,
+        backgroundColor:
+            _isRecording ? Colors.red : Theme.of(context).primaryColor,
+        child: Icon(
+          _isRecording ? Icons.stop : Icons.mic,
+          size: 30,
+          color: Colors.white,
+        ),
+        tooltip: _isRecording ? 'Stoppen' : 'Aufnahme starten',
+      );
+    }
+    return null; // Kein Button auf anderen Seiten anzeigen
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: CustomAppBar(
+        isLoggedIn: _isLoggedIn,
+        onLogout: () => setState(() {
+          _isLoggedIn = false;
+          _showMessage("Logged out successfully!");
+        }),
+        onDropdownSelected: (value) => _showDropdownMenu(value),
+      ),
+      body: _buildContent(),
+      bottomNavigationBar: CustomBottomNavigationBar(
+        currentIndex: _selectedIndex,
+        onTap: _onItemTapped,
+      ),
+      floatingActionButton: _buildFloatingActionButton(),
+      floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
+    );
+  }
 }
+
+
+
+/*
+import 'package:flutter/material.dart';
+import 'package:record/record.dart';
+import 'package:path_provider/path_provider.dart';
+
+import 'add_expense.dart';
+import 'groups.dart';
+import 'statistics.dart';
+import 'payments.dart';
+import 'settings.dart';
+import 'components/appbar.dart';
+import 'components/bottom_nav.dart';
+
+/// 🏠 **HomePage**: Hauptseite der App mit Navigation, Zustand und Mikrofonintegration.
+class HomePage extends StatefulWidget {
+  const HomePage({super.key});
+
+  @override
+  State<HomePage> createState() => _HomePageState();
+}
+
+// -----------------------------------
+// HomePage State-Logik
+// -----------------------------------
+class _HomePageState extends State<HomePage> {
+  int _selectedIndex = 0;
+  bool _isLoggedIn = false;
+  bool _isRecording = false;
+  String? _audioFilePath; // Gespeicherter Audio-Dateipfad
+  final _recorder = Record();
+
+  /// 🧭 Navigation zwischen BottomNavigationItems
+  void _onItemTapped(int index) {
+    if (index == 2) {
+      _navigateToAddExpense();
+    } else {
+      setState(() {
+        _selectedIndex = index;
+      });
+    }
+  }
+
+  /// ➕ Direkt zur AddExpense-Seite navigieren
+  void _navigateToAddExpense() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => const AddExpenseScreen()),
+    );
+  }
+
+  /// 👤 Dropdown Menü für eingeloggte Benutzer
+  void _showDropdownMenu(String value) {
+    switch (value) {
+      case 'profile':
+      case 'settings':
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => const SettingsPage()),
+        );
+        break;
+      case 'logout':
+        setState(() {
+          _isLoggedIn = false;
+          _showMessage("Logged out successfully!");
+        });
+        break;
+    }
+  }
+
+  void _showMessage(String message) {
+    ScaffoldMessenger.of(context)
+        .showSnackBar(SnackBar(content: Text(message)));
+  }
+
+  /// 🎤 Mikrofon-Button gedrückt: Aufnahme starten/stoppen
+  Future<void> _onMicrophonePressed() async {
+    if (!_isRecording) {
+      // Berechtigungen prüfen
+      if (await _recorder.hasPermission()) {
+        // Dateipfad für die Audioaufnahme erstellen
+        final directory = await getApplicationDocumentsDirectory();
+        final filePath =
+            '${directory.path}/audio_${DateTime.now().millisecondsSinceEpoch}.m4a';
+
+        // Aufnahme starten
+        await _recorder.start(
+          path: filePath,
+          encoder: AudioEncoder.aacLc,
+          samplingRate: 44100,
+          bitRate: 128000,
+        );
+
+        setState(() {
+          _isRecording = true;
+          _audioFilePath = filePath;
+        });
+
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('🎙️ Aufnahme gestartet...')),
+        );
+      } else {
+        _showMessage('🚫 Mikrofon-Berechtigung verweigert!');
+      }
+    } else {
+      // Aufnahme stoppen
+      await _recorder.stop();
+
+      setState(() {
+        _isRecording = false;
+      });
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('🎧 Aufnahme gespeichert: $_audioFilePath')),
+      );
+    }
+  }
+
+  /// 📌 Inhaltsanzeige basierend auf Navigation
+  Widget _buildContent() {
+    final List<Widget> loggedInPages = [
+      _buildHomeContent(),
+      const GroupsPage(),
+      const Placeholder(), // Placeholder für Add Expense
+      const StatisticsPage(),
+      const PaymentsPage(),
+    ];
+
+    final List<Widget> loggedOutPages = [
+      _buildHomeContent(),
+      const GroupsPage(),
+      const Placeholder(),
+      const StatisticsPage(),
+      const Text('Payments (Login Required)'),
+    ];
+
+    return IndexedStack(
+      index: _selectedIndex,
+      children: _isLoggedIn ? loggedInPages : loggedOutPages,
+    );
+  }
+
+  /// 🏠 Inhalt der Startseite
+  Widget _buildHomeContent() {
+    return Scaffold(
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            const Text(
+              'This is the Home Page',
+              style: TextStyle(fontSize: 20),
+            ),
+            const SizedBox(height: 20),
+            Text(
+              _audioFilePath != null
+                  ? '📁 Gespeicherte Datei: $_audioFilePath'
+                  : '🎤 Noch keine Aufnahme vorhanden',
+              textAlign: TextAlign.center,
+              style: const TextStyle(fontSize: 16),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  /// 🎤 Zeige FloatingActionButton nur auf der Home-Seite
+  Widget? _buildFloatingActionButton() {
+    if (_selectedIndex == 0) {
+      return FloatingActionButton(
+        heroTag: 'home_microphone_button', // Eindeutiger Hero-Tag
+        onPressed: _onMicrophonePressed,
+        backgroundColor:
+            _isRecording ? Colors.red : Theme.of(context).primaryColor,
+        tooltip: _isRecording ? 'Stoppen' : 'Aufnahme starten',
+        child: Icon(
+          _isRecording ? Icons.stop : Icons.mic,
+          size: 30,
+          color: Colors.white,
+        ),
+      );
+    }
+    return null; // Kein Button auf anderen Seiten anzeigen
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: CustomAppBar(
+        isLoggedIn: _isLoggedIn,
+        onLogout: () => setState(() => _isLoggedIn = false),
+        onDropdownSelected: (value) => _showDropdownMenu(value),
+      ),
+      body: _buildContent(),
+      bottomNavigationBar: CustomBottomNavigationBar(
+        currentIndex: _selectedIndex,
+        onTap: _onItemTapped,
+      ),
+      floatingActionButton: _buildFloatingActionButton(),
+      floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
+    );
+  }
+
+  @override
+  void dispose() {
+    _recorder.dispose();
+    super.dispose();
+  }
+}
+
+
+*/ 

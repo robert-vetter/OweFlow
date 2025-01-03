@@ -1,0 +1,1 @@
+-'Get Started' nur da, wenn nicht eingeloggt -> sonst Profil-Icon

@@ -161,7 +161,7 @@ class _EmailCheckScreenState extends State<EmailCheckScreen> {
       }
 
       _showMessage('Logged in successfully!');
-      Navigator.popUntil(context, ModalRoute.withName('/'));
+      Navigator.pop(context, true); // Rückgabe: true für erfolgreichen Login
     } catch (e) {
       setState(() {
         _passwordError = e.toString();
@@ -187,6 +187,7 @@ class _EmailCheckScreenState extends State<EmailCheckScreen> {
       );
 
       _showMessage('Registration successful!');
+      Navigator.pop(context, true); // Rückgabe: true für erfolgreichen Login
       Navigator.pushReplacement(
           context,
           MaterialPageRoute(
