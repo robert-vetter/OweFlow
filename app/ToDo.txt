@@ -10,3 +10,8 @@ Alleinstellungsmerkmale (Unique-Selling-Points - USPs)
 -integrierter Chat
 -(Sprachsteuerung)
 -(KI-gestützte Kostenaufteilung)
+
+
+Datenbank-Modellierung:
+1. https://drive.google.com/drive/u/1/home mit OweFlow Google Acc
+2. Auf Datei "Schema" klicken und "mit draw.io öffnen"
