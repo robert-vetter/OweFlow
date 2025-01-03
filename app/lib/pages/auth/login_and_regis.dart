@@ -1,5 +1,6 @@
 import 'package:app/pages/auth/verification_email.dart';
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'dart:async';
 
 import 'auth_service.dart'; // Enthält die implementierte AuthService-Klasse
@@ -222,8 +223,14 @@ class _EmailCheckScreenState extends State<EmailCheckScreen> {
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
+        child: Wrap(
+          direction:
+              Axis.vertical, // Vertikale Ausrichtung, ein Element pro Zeile
+          spacing: 0, // Kein horizontaler Abstand
+          runSpacing: 10, // Vertikaler Abstand, anpassbar je nach Bedarf
+
+          //Column(
+          //  crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             if (!_isRegistering && !_isLogin) ...[
               // Gemischtes Feld mit Eingabe (Email, Benutzername, oder Telefonnummer)
@@ -357,7 +364,134 @@ class _EmailCheckScreenState extends State<EmailCheckScreen> {
                 child: const Text('Back to Login'),
               ),
             ],
+
+            SocialMediaLoginBar(
+              onLogin: (provider) {
+                // Hier kannst du die spezifische Login-Logik für den Anbieter implementieren
+                print('Login mit $provider ausgewählt');
+              },
+            ),
           ],
+        ),
+      ),
+    );
+  }
+}
+
+class SocialMediaLoginBar extends StatelessWidget {
+  final Function(String provider) onLogin;
+
+  /// Parameter, um anzugeben, welche Anbieter angezeigt werden sollen
+  final bool showGoogle;
+  final bool showMicrosoft;
+  final bool showLinkedIn;
+  final bool showFacebook;
+  final bool showApple;
+
+  const SocialMediaLoginBar({
+    Key? key,
+    required this.onLogin,
+    this.showGoogle = true,
+    this.showMicrosoft = true,
+    this.showLinkedIn = true,
+    this.showFacebook = true,
+    this.showApple = true,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        if (showGoogle)
+          _buildSocialButton(
+            icon: FontAwesomeIcons.google,
+            color: Colors.red,
+            onTap: () => onLogin("Google"),
+          ),
+        if (showMicrosoft)
+          _buildSocialButton(
+            icon: FontAwesomeIcons.microsoft,
+            color: Colors.blueGrey,
+            onTap: () => onLogin("Microsoft"),
+          ),
+        if (showLinkedIn)
+          _buildSocialButton(
+            icon: FontAwesomeIcons.linkedin,
+            color: Colors.blue,
+            onTap: () => onLogin("LinkedIn"),
+          ),
+        if (showFacebook)
+          _buildSocialButton(
+            icon: FontAwesomeIcons.facebook,
+            color: Colors.indigo,
+            onTap: () => onLogin("Facebook"),
+          ),
+        if (showApple)
+          _buildSocialButton(
+            icon: FontAwesomeIcons.apple,
+            color: Colors.black,
+            onTap: () => onLogin("Apple"),
+          ),
+      ],
+    );
+  }
+
+  Widget _buildSocialButton({
+    required IconData icon,
+    required Color color,
+    required VoidCallback onTap,
+  }) {
+    return GestureDetector(
+      onTap: onTap,
+      child: MouseRegion(
+        cursor: SystemMouseCursors.click,
+        child: _HoverableIcon(
+          icon: icon,
+          color: color,
+        ),
+      ),
+    );
+  }
+}
+
+class _HoverableIcon extends StatefulWidget {
+  final IconData icon;
+  final Color color;
+
+  const _HoverableIcon({
+    Key? key,
+    required this.icon,
+    required this.color,
+  }) : super(key: key);
+
+  @override
+  __HoverableIconState createState() => __HoverableIconState();
+}
+
+class __HoverableIconState extends State<_HoverableIcon> {
+  bool _isHovered = false;
+
+  @override
+  Widget build(BuildContext context) {
+    return MouseRegion(
+      onEnter: (_) => setState(() => _isHovered = true),
+      onExit: (_) => setState(() => _isHovered = false),
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 200),
+        width: 60,
+        height: 60,
+        margin: const EdgeInsets.symmetric(horizontal: 8.0),
+        decoration: BoxDecoration(
+          shape: BoxShape.circle,
+          color: _isHovered
+              ? widget.color.withOpacity(0.15)
+              : Colors.white.withOpacity(0.0),
+        ),
+        child: Icon(
+          widget.icon,
+          color: widget.color,
+          size: 30,
         ),
       ),
     );
