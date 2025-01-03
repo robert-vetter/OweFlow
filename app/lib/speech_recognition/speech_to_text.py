@@ -6,6 +6,11 @@ import warnings
 
 warnings.filterwarnings("ignore")
 
+
+print("CUDA verfügbar:", torch.cuda.is_available())
+print("Aktuelles CUDA-Gerät:", torch.cuda.current_device())
+print("CUDA-Gerät-Name:", torch.cuda.get_device_name(0) if torch.cuda.is_available() else "Keine GPU erkannt")
+
 # --- CUDA überprüfen ---
 print(torch.cuda.is_available())
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
@@ -17,7 +22,7 @@ torch.backends.cudnn.benchmark = True
 torch.backends.cudnn.enabled = True
 
 # --- Whisper-Modell laden ---
-model = whisper.load_model('base', device=device)  # Alternativen: 'base', 'medium', 'large'
+model = whisper.load_model('turbo').to(device)
 
 # --- Audiodatei vorbereiten ---
 current_dir = os.path.dirname(os.path.abspath(__file__))
@@ -28,7 +33,7 @@ print("🎙️ Starting to transcribe...")
 
 # --- Transkription ---
 start_time = time.time()
-result = model.transcribe(audio_file)
+result = model.transcribe(audio_file, fp16=True)
 transcription_time = time.time() - start_time
 print(f"⏱️ Transkriptionszeit: {transcription_time:.2f} Sekunden")
 
