@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:http/http.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 import 'groups.dart';
 import 'settings.dart';
 import 'components/appbar.dart';
@@ -19,6 +21,17 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   int _selectedIndex = 0;
   bool _isLoggedIn = false;
+
+  @override
+  void initState() {
+    super.initState();
+
+    Supabase.instance.client.auth.onAuthStateChange.listen((data) {
+      setState(() {
+        _isLoggedIn = (data.session?.user.id) != null ? true : false;
+      });
+    });
+  }
 
   /// 🧭 Navigation zwischen BottomNavigationItems
   void _onItemTapped(int index) {
@@ -246,7 +259,6 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: CustomAppBar(
-        isLoggedIn: _isLoggedIn,
         onLogout: () => setState(() => _isLoggedIn = false),
         onDropdownSelected: (value) => _showDropdownMenu(value),
       ),
