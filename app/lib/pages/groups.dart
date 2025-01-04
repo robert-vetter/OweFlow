@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'add_friend.dart';
+import 'add_expense.dart'; // Neue Seite zum Erstellen einer Gruppe hinzufügen
 
 class GroupsPage extends StatefulWidget {
   const GroupsPage({super.key});
@@ -18,29 +19,45 @@ class _GroupsPageState extends State<GroupsPage> {
     });
   }
 
+  /// 📌 Build FloatingActionButton basierend auf dem Zustand
+  Widget? _buildFloatingActionButton() {
+    if (_showFriends) {
+      return FloatingActionButton.extended(
+        onPressed: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => const AddFriendPage()),
+          );
+        },
+        label: const Text('Add Friend'),
+        icon: const Icon(Icons.person_add),
+        backgroundColor: Colors.blue,
+      );
+    } else {
+      return FloatingActionButton.extended(
+        onPressed: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => const AddExpenseScreen()),
+          );
+        },
+        label: const Text('Add Group'),
+        icon: const Icon(Icons.group_add),
+        backgroundColor: Colors.green,
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      /// 🧭 Umschaltbereich zwischen Freunde und Gruppen
       body: Column(
         children: [
           /// 🔄 Umschalt-Buttons
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              TextButton(
-                onPressed: () => _toggleView(true),
-                style: TextButton.styleFrom(
-                  backgroundColor: _showFriends
-                      ? Colors.blue.withOpacity(0.2)
-                      : Colors.transparent,
-                  foregroundColor: _showFriends ? Colors.blue : Colors.grey,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(20),
-                  ),
-                ),
-                child: const Text('Freunde'),
-              ),
-              const SizedBox(width: 10),
               TextButton(
                 onPressed: () => _toggleView(false),
                 style: TextButton.styleFrom(
@@ -54,6 +71,20 @@ class _GroupsPageState extends State<GroupsPage> {
                 ),
                 child: const Text('Gruppen'),
               ),
+              const SizedBox(width: 10),
+              TextButton(
+                onPressed: () => _toggleView(true),
+                style: TextButton.styleFrom(
+                  backgroundColor: _showFriends
+                      ? Colors.blue.withOpacity(0.2)
+                      : Colors.transparent,
+                  foregroundColor: _showFriends ? Colors.blue : Colors.grey,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                ),
+                child: const Text('Freunde'),
+              ),
             ],
           ),
 
@@ -63,17 +94,9 @@ class _GroupsPageState extends State<GroupsPage> {
           ),
         ],
       ),
-      floatingActionButton: FloatingActionButton.extended(
-        onPressed: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => const AddFriendPage()),
-          );
-        },
-        label: const Text('Add Friend'),
-        icon: const Icon(Icons.person_add),
-        backgroundColor: Colors.blue,
-      ),
+
+      /// ➕ FloatingActionButton je nach Zustand anzeigen
+      floatingActionButton: _buildFloatingActionButton(),
     );
   }
 
