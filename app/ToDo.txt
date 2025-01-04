@@ -6,13 +6,13 @@ Mit den Basic Features starten!
 
 Alleinstellungsmerkmale (Unique-Selling-Points - USPs)
 -direkte Integration von Zahlungsdienstleistern (bspw. PayPal) -> hat keine andere App, wirklich einfach zu integrieren!
--> wird denke Hauptfeature
+-virtuelles manuelles Gruppenkonto (Unterkonten) -> keine manuelle Zahlung mehr notwendig, sondern alles läuft über dieses Konto
+-> ggf. auch Blockchain zur transparenten Verwaltung
+Geschäftsmodell: Zinsen von virtuellen Konten der Nutzer
 
 -Integration von Nicht-Nutzern über QR-Codes und Links, Gastmodus -> bei ALLEN anderen Apps braucht man die App!; temporäre Gruppen!
--virtuelles manuelles Gruppenkonto -> keine manuelle Zahlung mehr notwendig, sondern alles läuft über dieses Konto
 -Integration in Kalender / Tasks
 -integrierter Chat
--(Blockchain zur transparenten Verwaltung)
 -(Sprachsteuerung)
 -(KI-gestützte Kostenaufteilung)
 
