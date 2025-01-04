@@ -1,7 +1,10 @@
 import 'package:app/pages/auth/verification_email.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 import 'dart:async';
+import 'dart:io';
 
 import 'auth_service.dart'; // Enthält die implementierte AuthService-Klasse
 
@@ -367,9 +370,22 @@ class _EmailCheckScreenState extends State<EmailCheckScreen> {
             ],
 
             SocialMediaLoginBar(
-              onLogin: (provider) {
-                // Hier kannst du die spezifische Login-Logik für den Anbieter implementieren
-                print('Login mit $provider ausgewählt');
+              onLogin: (provider) async {
+                switch (provider) {
+                  case "Google":
+                    if (!kIsWeb && (Platform.isAndroid || Platform.isIOS)) {
+                      try {
+                        return nativeGoogleSignIn();
+                      } catch (e) {
+                        _showMessage(
+                            "Login with Google failed: " + e.toString());
+                      }
+                    }
+                    await Supabase.instance.client.auth
+                        .signInWithOAuth(OAuthProvider.google);
+                  default:
+                    print("Login with $provider ");
+                }
               },
             ),
           ],

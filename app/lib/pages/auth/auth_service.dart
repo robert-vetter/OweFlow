@@ -1,4 +1,5 @@
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 
 Future<bool> isEmailUsed(String email) async {
   try {
@@ -96,6 +97,38 @@ Future<void> loginWithUsername(String username, String password) async {
   } catch (e) {
     throw Exception('Login failed: $e');
   }
+}
+
+Future<void> nativeGoogleSignIn() async {
+  /// Web Client ID that you registered with Google Cloud.
+  const webClientId =
+      '422006519414-oi3ll3vidm7trre9in6n90u8lu6jdd2q.apps.googleusercontent.com';
+
+  /// iOS Client ID that you registered with Google Cloud.
+  const iosClientId =
+      '422006519414-n7g7g8ipg1n44b6f5625167fbamp2205.apps.googleusercontent.com';
+
+  final GoogleSignIn googleSignIn = GoogleSignIn(
+    clientId: iosClientId,
+    serverClientId: webClientId,
+  );
+  final googleUser = await googleSignIn.signIn();
+  final googleAuth = await googleUser!.authentication;
+  final accessToken = googleAuth.accessToken;
+  final idToken = googleAuth.idToken;
+
+  if (accessToken == null) {
+    throw 'No Access Token found.';
+  }
+  if (idToken == null) {
+    throw 'No ID Token found.';
+  }
+
+  await Supabase.instance.client.auth.signInWithIdToken(
+    provider: OAuthProvider.google,
+    idToken: idToken,
+    accessToken: accessToken,
+  );
 }
 
 //register
