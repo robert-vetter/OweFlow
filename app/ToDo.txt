@@ -1,1 +1,37 @@
 -'Get Started' nur da, wenn nicht eingeloggt -> sonst Profil-Icon
+
+Mit den Basic Features starten!
+-Freunde und Gruppen
+-automatisierte Erinnerungen
+
+Alleinstellungsmerkmale (Unique-Selling-Points - USPs)
+-direkte Integration von Zahlungsdienstleistern (bspw. PayPal) -> hat keine andere App, wirklich einfach zu integrieren!
+-virtuelles manuelles Gruppenkonto (Unterkonten) -> keine manuelle Zahlung mehr notwendig, sondern alles läuft über dieses Konto
+-> ggf. auch Blockchain zur transparenten Verwaltung
+Geschäftsmodell: Zinsen von virtuellen Konten der Nutzer
+
+Also:
+Persönliches Wallet: Jeder Nutzer verfügt über ein persönliches Wallet, das als Hauptkonto für Einzahlungen, Ausgaben und Rückzahlungen dient. 
+Direkte Integration von PayPal, Revolut und Bank-APIs ermöglicht nahtlose Transaktionen auf dieses Wallet – ohne die App zu verlassen.
+
+Gruppen-Wallets: Gruppen erstellen automatisch virtuelle Wallets, die als gemeinsame Kassen fungieren. 
+Nutzer können flexibel entscheiden, ob sie im Voraus in das Gruppen-Wallet einzahlen oder ihre Anteile direkt von ihrem persönlichen Wallet abbuchen lassen möchten.
+
+Automatische Fallback-Logik: Wenn das Gruppen-Wallet leer ist, greift die App automatisch auf das persönliche Wallet zurück und schlägt smarte Zahlungsvorgänge vor: 
+„Lisa, soll ich deinen Anteil jetzt von deinem persönlichen Wallet begleichen?“
+
+Smarte Empfehlungen: Ein integrierter Finanz-Assistent optimiert Zahlungsketten, vermeidet doppelte Überweisungen und erinnert Nutzer automatisch an ausstehende Zahlungen.
+
+Transparenz und Sicherheit: Alle Transaktionen sind für die jeweiligen Teilnehmer klar sichtbar. Optional kann durch Blockchain-Technologie maximale Transparenz 
+und demokratische Abstimmungen für größere Ausgaben sichergestellt werden.
+
+-Integration von Nicht-Nutzern über QR-Codes und Links, Gastmodus -> bei ALLEN anderen Apps braucht man die App!; temporäre Gruppen!
+-Integration in Kalender / Tasks
+-integrierter Chat
+-(Sprachsteuerung)
+-(KI-gestützte Kostenaufteilung)
+
+
+Datenbank-Modellierung:
+1. https://drive.google.com/drive/u/1/home mit OweFlow Google Acc
+2. Auf Datei "Schema" klicken und "mit draw.io öffnen"

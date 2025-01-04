@@ -17,14 +17,10 @@ class CustomBottomNavigationBar extends StatelessWidget {
       items: const [
         BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
         BottomNavigationBarItem(
-            icon: Icon(Icons.group), label: 'Friends & Groups'),
-        BottomNavigationBarItem(
-            icon: Icon(Icons.add_circle, size: 40.0), label: 'Add'),
-        BottomNavigationBarItem(icon: Icon(Icons.bar_chart), label: 'Stats'),
-        BottomNavigationBarItem(
-            icon: Icon(Icons.attach_money), label: 'Payments'),
+            icon: Icon(Icons.group), label: 'Groups & Friends'),
       ],
-      currentIndex: currentIndex,
+      currentIndex:
+          currentIndex.clamp(0, 1), // Sicherheit vor ungültigen Indizes
       selectedItemColor: Colors.blue,
       unselectedItemColor: Colors.grey,
       onTap: onTap,
