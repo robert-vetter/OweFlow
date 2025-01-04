@@ -46,21 +46,6 @@ class _HomePageState extends State<HomePage> {
     }
   }
 
-  /// 📲 Login-Logik
-  void _navigateToLogin() async {
-    final result = await Navigator.push(
-      context,
-      MaterialPageRoute(builder: (context) => const EmailCheckScreen()),
-    );
-
-    if (result == true) {
-      setState(() {
-        _isLoggedIn = true;
-        _showMessage("Successfully logged in!");
-      });
-    }
-  }
-
   /// Snackbar-Nachricht anzeigen
   void _showMessage(String message) {
     ScaffoldMessenger.of(context)
@@ -85,35 +70,27 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  /// 🏠 Inhalt der Startseite (Optimierter Home Content)
+  /// 🏠 Optimierter Startbildschirm: Nutzerzentriert
   Widget _buildHomeContent() {
     return SingleChildScrollView(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // 🏦 Wallet-Übersicht
           _buildWalletOverview(),
           const SizedBox(height: 16),
-
-          // ⚡ Schnelle Aktionen
           _buildQuickActions(),
           const SizedBox(height: 16),
-
-          // 🤖 Smarte Empfehlungen
           _buildSmartSuggestions(),
           const SizedBox(height: 16),
-
-          // 📊 Finanzstatistiken
-          _buildFinanceStats(),
+          _buildReminders(),
         ],
       ),
     );
   }
 
-  /// 🏦 Persönliches Wallet: Kontostand & letzte Transaktionen
+  /// 🏦 Persönliches Wallet: Finanzstatus
   Widget _buildWalletOverview() {
     return Card(
-      elevation: 2,
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       child: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -124,7 +101,6 @@ class _HomePageState extends State<HomePage> {
               'Dein Wallet',
               style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
             ),
-            const SizedBox(height: 8),
             Text(
               'Kontostand: €250.00',
               style: TextStyle(
@@ -133,79 +109,50 @@ class _HomePageState extends State<HomePage> {
                 color: Colors.green[700],
               ),
             ),
-            const SizedBox(height: 8),
             const Divider(),
-            const Text(
-              'Letzte Transaktionen:',
-              style: TextStyle(fontWeight: FontWeight.bold),
-            ),
-            const ListTile(
-              leading: Icon(Icons.arrow_upward, color: Colors.red),
-              title: Text('Lisa bezahlt – €15.00'),
-              subtitle: Text('Heute, 10:30'),
-            ),
-            const ListTile(
-              leading: Icon(Icons.arrow_downward, color: Colors.green),
-              title: Text('Max hat dir – €25.00 gesendet'),
-              subtitle: Text('Gestern, 14:20'),
-            ),
+            _buildTransactionItem('Lisa bezahlt – €15.00', 'Heute, 10:30',
+                Icons.arrow_upward, Colors.red),
+            _buildTransactionItem('Max hat dir – €25.00 gesendet',
+                'Gestern, 14:20', Icons.arrow_downward, Colors.green),
           ],
         ),
       ),
     );
   }
 
-  /// ⚡ Schnelle Aktionen: Buttons für häufige Aktionen
+  Widget _buildTransactionItem(
+      String title, String subtitle, IconData icon, Color color) {
+    return ListTile(
+      leading: Icon(icon, color: color),
+      title: Text(title),
+      subtitle: Text(subtitle),
+    );
+  }
+
+  /// ⚡ Schnelle Aktionen
   Widget _buildQuickActions() {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16.0),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceAround,
         children: [
-          const Text(
-            'Schnelle Aktionen',
-            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-          ),
-          const SizedBox(height: 8),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              _buildActionButton(
-                icon: Icons.account_balance_wallet,
-                label: 'Geld einzahlen',
-                color: Colors.blue,
-                onPressed: () {},
-              ),
-              _buildActionButton(
-                icon: Icons.autorenew,
-                label: 'Schulden begleichen',
-                color: Colors.orange,
-                onPressed: () {},
-              ),
-              _buildActionButton(
-                icon: Icons.bar_chart,
-                label: 'Details anzeigen',
-                color: Colors.purple,
-                onPressed: () {},
-              ),
-            ],
-          ),
+          _buildActionButton(
+              Icons.account_balance_wallet, 'Geld einzahlen', Colors.blue),
+          _buildActionButton(
+              Icons.autorenew, 'Schulden begleichen', Colors.orange),
+          _buildActionButton(
+              Icons.person_add, 'Freund hinzufügen', Colors.green),
         ],
       ),
     );
   }
 
-  Widget _buildActionButton({
-    required IconData icon,
-    required String label,
-    required Color color,
-    required VoidCallback onPressed,
-  }) {
+  Widget _buildActionButton(IconData icon, String label, Color color) {
     return Column(
       children: [
         FloatingActionButton(
           heroTag: label,
-          onPressed: onPressed,
+          onPressed: () {},
           backgroundColor: color,
           child: Icon(icon, color: Colors.white),
           mini: true,
@@ -231,13 +178,17 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  /// 📊 Finanzstatistiken
-  Widget _buildFinanceStats() {
+  /// 📅 Erinnerungen
+  Widget _buildReminders() {
     return Card(
       margin: const EdgeInsets.all(16.0),
-      child: const Padding(
-        padding: EdgeInsets.all(16.0),
-        child: Text('40% deiner Ausgaben gingen an Essen.'),
+      child: ListTile(
+        leading: const Icon(Icons.notifications, color: Colors.blue),
+        title: const Text('Du hast eine offene Zahlung an Max.'),
+        trailing: ElevatedButton(
+          onPressed: () {},
+          child: const Text('Erledigen'),
+        ),
       ),
     );
   }
