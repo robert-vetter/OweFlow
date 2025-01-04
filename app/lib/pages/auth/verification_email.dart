@@ -1,13 +1,7 @@
+import 'package:flutter/material.dart';
+import 'pin_code_fields/pin_code_fields.dart';
 import 'package:app/pages/auth/auth_service.dart';
 import 'package:app/pages/home.dart';
-// Import for SchedulerBinding
-
-import 'pin_code_fields/pin_code_fields.dart';
-import 'package:flutter/material.dart';
-
-void printLog(String text) {
-  print(text);
-}
 
 class EmailVerifyPageWidget extends StatefulWidget {
   const EmailVerifyPageWidget({
@@ -29,207 +23,279 @@ class EmailVerifyPageWidget extends StatefulWidget {
 
 class _EmailVerifyPageWidgetState extends State<EmailVerifyPageWidget> {
   final GlobalKey<ScaffoldState> scaffoldKey = GlobalKey<ScaffoldState>();
-
   late TextEditingController _pinCodeController;
   bool? _isVerified;
+  bool _isLoading = false;
 
   @override
   void initState() {
     super.initState();
-
-    // Initialize the controller
     _pinCodeController = TextEditingController();
   }
 
-  // On page load action
   Future<void> _confirm() async {
-    _isVerified = await verifyEmailWithToken(
-      widget.email!,
-      _pinCodeController.text,
-    );
+    setState(() => _isLoading = true);
 
-    if (_isVerified == true) {
-      if (widget.redirectToPhoneVerify!) {
-        Navigator.push(
+    try {
+      _isVerified = await verifyEmailWithToken(
+        widget.email!,
+        _pinCodeController.text,
+      );
+
+      if (_isVerified == true) {
+        _showSuccessAnimation();
+        await Future.delayed(const Duration(seconds: 1));
+
+        if (!mounted) return;
+        Navigator.pushReplacement(
           context,
-          MaterialPageRoute(
-              builder: (context) => HomePage()), // Navigate to home page
+          MaterialPageRoute(builder: (context) => HomePage()),
         );
       } else {
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-              builder: (context) => HomePage()), // Navigate to home page
-        );
+        _showErrorDialog();
       }
-    } else {
-      await showDialog(
-        context: context,
-        builder: (alertDialogContext) {
-          return AlertDialog(
-            title: const Text('Wrong Token'),
-            content: const Text('Please try again'),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.pop(alertDialogContext),
-                child: const Text('Ok'),
+    } finally {
+      if (mounted) setState(() => _isLoading = false);
+    }
+  }
+
+  Future<void> _showSuccessAnimation() async {
+    await showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) => Dialog(
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        child: Container(
+          padding: const EdgeInsets.all(20),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(15),
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Icon(
+                Icons.check_circle_outline,
+                color: Colors.green,
+                size: 64,
+              ),
+              const SizedBox(height: 16),
+              Text(
+                'Verification Successful!',
+                style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                      color: Colors.green,
+                      fontWeight: FontWeight.bold,
+                    ),
               ),
             ],
-          );
-        },
-      );
-      setState(() {
-        _pinCodeController.clear();
-      });
-    }
+          ),
+        ),
+      ),
+    );
+  }
+
+  void _showErrorDialog() {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(15),
+        ),
+        title: Row(
+          children: [
+            const Icon(Icons.error_outline, color: Colors.red),
+            const SizedBox(width: 8),
+            const Text('Verification Failed'),
+          ],
+        ),
+        content: const Text(
+          'The verification code you entered is incorrect. Please try again.',
+          style: TextStyle(fontSize: 16),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () {
+              Navigator.pop(context);
+              _pinCodeController.clear();
+            },
+            child: const Text('OK', style: TextStyle(fontSize: 16)),
+          ),
+        ],
+      ),
+    );
   }
 
   @override
   void dispose() {
-    _pinCodeController.dispose(); // Dispose of the controller
+    _pinCodeController.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    final primaryColor = Color(0xFF3985EF);
-    final primaryTextColor = Colors.black;
-    final secondaryTextColor = Colors.grey;
-
-    return GestureDetector(
-      onTap: () {
-        FocusScope.of(context).unfocus();
-      },
-      child: Scaffold(
-        key: scaffoldKey,
-        backgroundColor: Colors.white,
-        body: SafeArea(
-          child: Padding(
-            padding: const EdgeInsets.all(24),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.start,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                Padding(
-                  padding: const EdgeInsets.only(top: 48),
-                  child: Icon(
-                    Icons.email_outlined,
-                    color: primaryColor,
-                    size: 120,
-                  ),
-                ),
-                Text(
-                  'Verify Your Email',
-                  style: TextStyle(
-                    fontFamily: 'Outfit',
-                    color: primaryTextColor,
-                    fontSize: 32,
-                    fontWeight: FontWeight.w500,
-                  ),
-                ),
-                const SizedBox(height: 12),
-                Text(
-                  'Please check your inbox and click on the verification link sent to your emial address.',
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                    fontFamily: 'Readex Pro',
-                    color: secondaryTextColor,
-                    fontSize: 18,
-                  ),
-                ),
-                const SizedBox(height: 24),
-                PinCodeTextField(
-                  appContext: context,
-                  length: 6,
-                  textStyle: TextStyle(
-                    fontFamily: 'Readex Pro',
-                    fontSize: 18,
-                  ),
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  enableActiveFill: false,
-                  autoFocus: true,
-                  enablePinAutofill: false,
-                  errorTextSpace: 16,
-                  showCursor: true,
-                  cursorColor: primaryColor,
-                  keyboardType: TextInputType.number,
-                  pinTheme: PinTheme(
-                    fieldHeight: 40,
-                    fieldWidth: 40,
-                    borderWidth: 2,
-                    borderRadius: BorderRadius.circular(8),
-                    shape: PinCodeFieldShape.box,
-                    activeColor: primaryTextColor,
-                    inactiveColor: secondaryTextColor,
-                    selectedColor: primaryColor,
-                  ),
-                  controller: _pinCodeController,
-                  onChanged: (value) {},
-                ),
-                const SizedBox(height: 8),
-                ElevatedButton(
-                  onPressed: _confirm,
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: primaryColor,
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 40, vertical: 15),
-                    elevation: 3,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                  ),
-                  child: const Text(
-                    'Confirm OTP',
-                    style: TextStyle(
-                      fontFamily: 'Readex Pro',
-                      fontSize: 18,
-                      fontWeight: FontWeight.w500,
-                      color: Colors.white,
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 36),
-                Text(
-                  'Didn\'t receive the email?',
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                    fontFamily: 'Readex Pro',
-                    color: secondaryTextColor,
-                    fontSize: 18,
-                  ),
-                ),
-                const SizedBox(height: 12),
-                ElevatedButton(
-                  onPressed: () async {
-                    await signUpWithEmail(
-                      widget.email!,
-                      widget.password!,
-                    );
-                  },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: primaryColor,
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 40, vertical: 15),
-                    elevation: 3,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                  ),
-                  child: const Text(
-                    'Resend email',
-                    style: TextStyle(
-                      fontFamily: 'Readex Pro',
-                      fontSize: 18,
-                      fontWeight: FontWeight.w500,
-                      color: Colors.white,
-                    ),
-                  ),
-                ),
-              ],
+    return Scaffold(
+      key: scaffoldKey,
+      body: Container(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: [
+              Colors.blue.shade50,
+              Colors.white,
+            ],
+          ),
+        ),
+        child: SafeArea(
+          child: SingleChildScrollView(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 24),
+              child: Column(
+                children: [
+                  const SizedBox(height: 40),
+                  _buildHeader(),
+                  const SizedBox(height: 40),
+                  _buildVerificationForm(),
+                  const SizedBox(height: 40),
+                  _buildResendSection(),
+                ],
+              ),
             ),
           ),
         ),
       ),
+    );
+  }
+
+  Widget _buildHeader() {
+    return Column(
+      children: [
+        Container(
+          padding: const EdgeInsets.all(20),
+          decoration: BoxDecoration(
+            color: Colors.blue.shade100.withOpacity(0.3),
+            borderRadius: BorderRadius.circular(100),
+          ),
+          child: Icon(
+            Icons.mail_outline_rounded,
+            size: 80,
+            color: Theme.of(context).primaryColor,
+          ),
+        ),
+        const SizedBox(height: 24),
+        Text(
+          'Verify Your Email',
+          style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+                fontWeight: FontWeight.bold,
+                color: Colors.black87,
+              ),
+        ),
+        const SizedBox(height: 12),
+        Text(
+          'We\'ve sent a verification code to',
+          style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                color: Colors.black54,
+              ),
+        ),
+        Text(
+          widget.email ?? '',
+          style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                fontWeight: FontWeight.bold,
+                color: Colors.black87,
+              ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildVerificationForm() {
+    return Column(
+      children: [
+        PinCodeTextField(
+          appContext: context,
+          length: 6,
+          textStyle: const TextStyle(
+            fontFamily: 'Readex Pro',
+            fontSize: 18,
+          ),
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          enableActiveFill: false,
+          autoFocus: true,
+          enablePinAutofill: false,
+          showCursor: true,
+          cursorColor: Theme.of(context).primaryColor,
+          keyboardType: TextInputType.number,
+          pinTheme: PinTheme(
+            fieldHeight: 50,
+            fieldWidth: 45,
+            borderWidth: 2,
+            borderRadius: BorderRadius.circular(8),
+            shape: PinCodeFieldShape.box,
+            activeColor: Theme.of(context).primaryColor,
+            inactiveColor: Colors.grey.shade300,
+            selectedColor: Theme.of(context).primaryColor,
+          ),
+          controller: _pinCodeController,
+          onChanged: (value) {},
+        ),
+        const SizedBox(height: 24),
+        SizedBox(
+          width: double.infinity,
+          child: ElevatedButton(
+            onPressed: _isLoading ? null : _confirm,
+            style: ElevatedButton.styleFrom(
+              padding: const EdgeInsets.symmetric(vertical: 16),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
+            ),
+            child: _isLoading
+                ? const SizedBox(
+                    height: 24,
+                    width: 24,
+                    child: CircularProgressIndicator(
+                      strokeWidth: 2,
+                      valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                    ),
+                  )
+                : const Text(
+                    'Verify',
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildResendSection() {
+    return Column(
+      children: [
+        Text(
+          'Didn\'t receive the code?',
+          style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                color: Colors.black54,
+              ),
+        ),
+        const SizedBox(height: 12),
+        TextButton(
+          onPressed: () async {
+            await signUpWithEmail(widget.email!, widget.password!);
+          },
+          child: Text(
+            'Resend Code',
+            style: TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.bold,
+              color: Theme.of(context).primaryColor,
+            ),
+          ),
+        ),
+      ],
     );
   }
 }
