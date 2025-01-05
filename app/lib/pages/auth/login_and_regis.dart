@@ -32,7 +32,8 @@ class _EmailCheckScreenState extends State<EmailCheckScreen> {
   bool _isLogin = false;
   bool _showContinueButton = true;
   bool _loginRedirect = false;
-  bool _isFocusLostMixedField = true; // Flag, um den Fokusverlust zu verfolgen
+  bool _isFocusLostMixedField = true;
+  bool _obscurePassword = true;
 
   String? _inputError;
   String? _passwordError;
