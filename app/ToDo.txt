@@ -10,7 +10,7 @@ Alleinstellungsmerkmale (Unique-Selling-Points - USPs)
 -> direkte Zahlungsanfragen per PayPal/Revolut: Gruppenmitglieder können direkt in der App Zahlungsanfragen senden und empfangen – inklusive Push-Benachrichtigungen zur Bestätigung.
 -> Ein-Klick-Zahlungsbestätigung: Nutzer können Zahlungsanfragen mit nur einem Klick in der App bestätigen, ohne zu PayPal oder Revolut wechseln zu müssen.
 -> Echtzeit-Transparenz: Alle Transaktionen und Zahlungsstatus werden sofort in der App aktualisiert und für die Gruppe sichtbar gemacht.
-
+-virtuelles Bankkonto: wir verwalten ein großes Sammelkonto -> auf das überweisen die Pisser und wir nehmen das Geld höhö
 
 
 
