@@ -3,7 +3,6 @@ import 'groups.dart';
 import 'settings.dart';
 import 'components/appbar.dart';
 import 'components/bottom_nav.dart';
-import 'auth/login_and_regis.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});

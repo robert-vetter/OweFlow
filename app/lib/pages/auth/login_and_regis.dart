@@ -33,7 +33,7 @@ class _EmailCheckScreenState extends State<EmailCheckScreen> {
   bool _showContinueButton = true;
   bool _loginRedirect = false;
   bool _isFocusLostMixedField = true;
-  bool _obscurePassword = true;
+  final bool _obscurePassword = true;
 
   String? _inputError;
   String? _passwordError;
@@ -378,8 +378,7 @@ class _EmailCheckScreenState extends State<EmailCheckScreen> {
                       try {
                         return nativeGoogleSignIn();
                       } catch (e) {
-                        _showMessage(
-                            "Login with Google failed: " + e.toString());
+                        _showMessage("Login with Google failed: $e");
                       }
                     }
                     await Supabase.instance.client.auth
@@ -407,14 +406,14 @@ class SocialMediaLoginBar extends StatelessWidget {
   final bool showApple;
 
   const SocialMediaLoginBar({
-    Key? key,
+    super.key,
     required this.onLogin,
     this.showGoogle = true,
     this.showMicrosoft = true,
     this.showLinkedIn = true,
     this.showFacebook = true,
     this.showApple = true,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -478,10 +477,10 @@ class _HoverableIcon extends StatefulWidget {
   final Color color;
 
   const _HoverableIcon({
-    Key? key,
+    super.key,
     required this.icon,
     required this.color,
-  }) : super(key: key);
+  });
 
   @override
   __HoverableIconState createState() => __HoverableIconState();

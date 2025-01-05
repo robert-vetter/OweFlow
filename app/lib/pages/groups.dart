@@ -362,19 +362,33 @@ class _GroupsPageState extends State<GroupsPage> {
   }
 
   Widget _buildFloatingActionButton() {
-    return FloatingActionButton.extended(
-      onPressed: () {
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) =>
-                _showFriends ? const AddFriendPage() : const AddExpenseScreen(),
+    return Align(
+      alignment: Alignment.bottomCenter, // Centered at the bottom
+      child: Container(
+        width: 64.0, // Diameter of the circle
+        height: 64.0, // Diameter of the circle
+        decoration: BoxDecoration(
+          color: _showFriends ? Colors.blue : Colors.green,
+          shape: BoxShape.circle, // Makes the container circular
+        ),
+        child: IconButton(
+          onPressed: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => _showFriends
+                    ? const AddFriendPage()
+                    : const AddExpenseScreen(),
+              ),
+            );
+          },
+          icon: Icon(
+            _showFriends ? Icons.person_add : Icons.group_add,
+            color: Colors.white,
           ),
-        );
-      },
-      icon: Icon(_showFriends ? Icons.person_add : Icons.group_add),
-      label: Text(_showFriends ? 'Add Friend' : 'Add Group'),
-      backgroundColor: _showFriends ? Colors.blue : Colors.green,
+          tooltip: _showFriends ? 'Add Friend' : 'Add Group',
+        ),
+      ),
     );
   }
 }
