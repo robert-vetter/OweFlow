@@ -5,7 +5,6 @@ import 'groups.dart';
 import 'settings.dart';
 import 'components/appbar.dart';
 import 'components/bottom_nav.dart';
-import 'auth/login_and_regis.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -79,151 +78,86 @@ class _HomePageState extends State<HomePage> {
   }
 
   Widget _buildHomeContent() {
-    return CustomScrollView(
-      slivers: [
-        SliverToBoxAdapter(
-          child: _buildWalletHeader(),
-        ),
-        SliverToBoxAdapter(
-          child: _buildQuickActions(),
-        ),
-        SliverToBoxAdapter(
-          child: Padding(
-            padding: const EdgeInsets.fromLTRB(16, 24, 16, 8),
-            child: Text(
-              'Recent Transactions',
-              style: Theme.of(context).textTheme.titleLarge,
-            ),
-          ),
-        ),
-        _buildRecentTransactions(),
-        SliverToBoxAdapter(
-          child: _buildSmartSuggestions(),
-        ),
-        SliverToBoxAdapter(
-          child: _buildReminders(),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildWalletHeader() {
-    return Container(
-      margin: const EdgeInsets.all(16),
-      padding: const EdgeInsets.all(24),
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          colors: [Colors.blue.shade700, Colors.blue.shade900],
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-        ),
-        borderRadius: BorderRadius.circular(20),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.blue.withOpacity(0.3),
-            blurRadius: 8,
-            offset: const Offset(0, 4),
-          ),
-        ],
-      ),
+    return SingleChildScrollView(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(
-                'Your Balance',
-                style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                      color: Colors.white70,
-                    ),
-              ),
-              IconButton(
-                icon: const Icon(Icons.more_horiz, color: Colors.white),
-                onPressed: () {},
-              ),
-            ],
-          ),
-          const SizedBox(height: 8),
-          Text(
-            '€250.00',
-            style: Theme.of(context).textTheme.headlineLarge?.copyWith(
-                  color: Colors.white,
-                  fontWeight: FontWeight.bold,
-                ),
-          ),
-          const SizedBox(height: 16),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              _buildWalletStat('Income', '€450.00', Icons.arrow_downward),
-              _buildWalletStat('Expenses', '€200.00', Icons.arrow_upward),
-            ],
-          ),
+          _buildWelcomeHeader(),
+          _buildQuickActions(),
+          _buildPendingDebts(),
+          _buildPaymentRequests(),
+          _buildGroupHighlights(),
+          if (_hasSmartSuggestions()) _buildSmartSuggestions(),
         ],
       ),
     );
   }
 
-  Widget _buildWalletStat(String label, String amount, IconData icon) {
-    return Row(
-      children: [
-        Container(
-          padding: const EdgeInsets.all(8),
-          decoration: BoxDecoration(
-            color: Colors.white24,
-            borderRadius: BorderRadius.circular(8),
+  Widget _buildWelcomeHeader() {
+    return Container(
+      padding: const EdgeInsets.fromLTRB(20, 30, 20, 20),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Row(
+            children: [
+              Text(
+                'Willkommen zurück, ',
+                style: TextStyle(fontSize: 24, fontWeight: FontWeight.w500),
+              ),
+              Text(
+                'Alex',
+                style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+              ),
+              Text(' 👋', style: TextStyle(fontSize: 24)),
+            ],
           ),
-          child: Icon(icon, color: Colors.white, size: 16),
-        ),
-        const SizedBox(width: 8),
-        Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              label,
-              style: const TextStyle(color: Colors.white70, fontSize: 12),
+          const SizedBox(height: 8),
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+            decoration: BoxDecoration(
+              color: Colors.orange.shade50,
+              borderRadius: BorderRadius.circular(8),
+              border: Border.all(color: Colors.orange.shade200),
             ),
-            Text(
-              amount,
-              style: const TextStyle(color: Colors.white, fontSize: 16),
+            child: const Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Icon(Icons.info_outline, size: 16, color: Colors.orange),
+                SizedBox(width: 8),
+                Text(
+                  'Du schuldest noch 15€ in 2 Gruppen',
+                  style: TextStyle(color: Colors.orange, fontSize: 14),
+                ),
+              ],
             ),
-          ],
-        ),
-      ],
+          ),
+        ],
+      ),
     );
   }
 
   Widget _buildQuickActions() {
-    return Container(
-      height: 100,
-      padding: const EdgeInsets.symmetric(horizontal: 16),
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
       child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceAround,
         children: [
-          _buildActionButton(
-            'Send',
-            Icons.send_rounded,
-            Colors.purple,
-            () {},
+          Expanded(
+            child: _buildActionButton(
+              'Schulden begleichen',
+              Icons.payment,
+              Colors.green,
+              () {},
+            ),
           ),
-          _buildActionButton(
-            'Request',
-            Icons.account_balance_wallet,
-            Colors.orange,
-            () {},
-          ),
-          _buildActionButton(
-            'Split',
-            Icons.group_add,
-            Colors.green,
-            () {},
-          ),
-          _buildActionButton(
-            'Scan',
-            Icons.qr_code_scanner,
-            Colors.blue,
-            () {},
+          const SizedBox(width: 12),
+          Expanded(
+            child: _buildActionButton(
+              'Neue Ausgabe',
+              Icons.add_circle_outline,
+              Colors.blue,
+              () {},
+            ),
           ),
         ],
       ),
@@ -231,149 +165,270 @@ class _HomePageState extends State<HomePage> {
   }
 
   Widget _buildActionButton(
-      String label, IconData icon, Color color, VoidCallback onTap) {
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        InkWell(
-          onTap: onTap,
-          borderRadius: BorderRadius.circular(16),
-          child: Container(
-            padding: const EdgeInsets.all(12),
-            decoration: BoxDecoration(
-              color: color.withOpacity(0.1),
-              borderRadius: BorderRadius.circular(16),
-            ),
-            child: Icon(icon, color: color, size: 24),
-          ),
-        ),
-        const SizedBox(height: 8),
-        Text(
-          label,
-          style: Theme.of(context).textTheme.bodySmall,
-        ),
-      ],
-    );
-  }
-
-  Widget _buildRecentTransactions() {
-    final transactions = [
-      {
-        'name': 'Lisa',
-        'amount': '-€15.00',
-        'date': 'Today, 10:30',
-        'type': 'expense'
-      },
-      {
-        'name': 'Max',
-        'amount': '+€25.00',
-        'date': 'Yesterday, 14:20',
-        'type': 'income'
-      },
-    ];
-
-    return SliverList(
-      delegate: SliverChildBuilderDelegate(
-        (context, index) {
-          final transaction = transactions[index];
-          return ListTile(
-            leading: CircleAvatar(
-              backgroundColor: transaction['type'] == 'expense'
-                  ? Colors.red.shade100
-                  : Colors.green.shade100,
-              child: Icon(
-                transaction['type'] == 'expense'
-                    ? Icons.arrow_upward
-                    : Icons.arrow_downward,
-                color: transaction['type'] == 'expense'
-                    ? Colors.red
-                    : Colors.green,
-              ),
-            ),
-            title: Text(transaction['name']!),
-            subtitle: Text(transaction['date']!),
-            trailing: Text(
-              transaction['amount']!,
-              style: TextStyle(
-                color: transaction['type'] == 'expense'
-                    ? Colors.red
-                    : Colors.green,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-          );
-        },
-        childCount: transactions.length,
-      ),
-    );
-  }
-
-  Widget _buildSmartSuggestions() {
-    return Container(
-      margin: const EdgeInsets.all(16),
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: Colors.amber.shade50,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: Colors.amber.shade200),
+      String label, IconData icon, Color color, VoidCallback onPressed) {
+    return ElevatedButton(
+      onPressed: onPressed,
+      style: ElevatedButton.styleFrom(
+        backgroundColor: color.withOpacity(0.1),
+        foregroundColor: color,
+        padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 16),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       ),
       child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          const Icon(Icons.lightbulb, color: Colors.amber),
-          const SizedBox(width: 16),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  'Smart Suggestion',
-                  style: Theme.of(context).textTheme.titleSmall,
-                ),
-                const Text('Lisa is waiting for a payment from you.'),
-              ],
-            ),
+          Icon(icon, size: 20),
+          const SizedBox(width: 8),
+          Text(label, style: const TextStyle(fontSize: 14)),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildPendingDebts() {
+    return Padding(
+      padding: const EdgeInsets.all(20),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Text(
+            'Offene Schulden',
+            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
           ),
-          ElevatedButton(
-            onPressed: () {},
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.amber,
-              foregroundColor: Colors.black,
+          const SizedBox(height: 12),
+          Card(
+            elevation: 0,
+            shape:
+                RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+            child: ListView.separated(
+              shrinkWrap: true,
+              physics: const NeverScrollableScrollPhysics(),
+              itemCount: 2,
+              separatorBuilder: (context, index) => const Divider(height: 1),
+              itemBuilder: (context, index) {
+                return ListTile(
+                  contentPadding:
+                      const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                  leading: CircleAvatar(
+                    backgroundColor: Colors.blue.shade50,
+                    child: const Text('MB'),
+                  ),
+                  title: const Text('Max Bauer'),
+                  subtitle: const Text('WG Berlin'),
+                  trailing: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text(
+                        '8,50 €',
+                        style: TextStyle(
+                          color: Colors.red.shade700,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 16,
+                        ),
+                      ),
+                      const SizedBox(width: 12),
+                      ElevatedButton(
+                        onPressed: () {},
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.green,
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 16, vertical: 8),
+                        ),
+                        child: const Text('Bezahlen'),
+                      ),
+                    ],
+                  ),
+                );
+              },
             ),
-            child: const Text('Pay Now'),
           ),
         ],
       ),
     );
   }
 
-  Widget _buildReminders() {
+  Widget _buildPaymentRequests() {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 20),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Text(
+            'Zahlungsanfragen',
+            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+          ),
+          const SizedBox(height: 12),
+          Card(
+            elevation: 0,
+            shape:
+                RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+            child: Padding(
+              padding: const EdgeInsets.all(16),
+              child: Column(
+                children: [
+                  const Row(
+                    children: [
+                      CircleAvatar(
+                        backgroundColor: Colors.amber,
+                        child: Text('LS'),
+                      ),
+                      SizedBox(width: 12),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              'Lisa Schmidt',
+                              style: TextStyle(fontWeight: FontWeight.bold),
+                            ),
+                            Text('Mittagessen vom 12.01.'),
+                          ],
+                        ),
+                      ),
+                      Text(
+                        '12,50 €',
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 16,
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 16),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: OutlinedButton(
+                          onPressed: () {},
+                          style: OutlinedButton.styleFrom(
+                            foregroundColor: Colors.red,
+                            side: const BorderSide(color: Colors.red),
+                          ),
+                          child: const Text('Ablehnen'),
+                        ),
+                      ),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: ElevatedButton(
+                          onPressed: () {},
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.green,
+                          ),
+                          child: const Text('Bestätigen'),
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildGroupHighlights() {
+    return Padding(
+      padding: const EdgeInsets.all(20),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Text(
+            'Deine Gruppen',
+            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+          ),
+          const SizedBox(height: 12),
+          SizedBox(
+            height: 120,
+            child: ListView.builder(
+              scrollDirection: Axis.horizontal,
+              itemCount: 3,
+              itemBuilder: (context, index) {
+                return Card(
+                  elevation: 0,
+                  margin: const EdgeInsets.only(right: 12),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Container(
+                    width: 160,
+                    padding: const EdgeInsets.all(16),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          index == 0 ? 'WG Berlin' : 'Urlaub 2024',
+                          style: const TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 16,
+                          ),
+                        ),
+                        const Spacer(),
+                        Text(
+                          index == 0 ? '2 offene Ausgaben' : '1 offene Ausgabe',
+                          style: TextStyle(
+                            color: Colors.grey.shade600,
+                            fontSize: 14,
+                          ),
+                        ),
+                        const SizedBox(height: 4),
+                        Text(
+                          index == 0 ? '-15,00 €' : '+8,50 €',
+                          style: TextStyle(
+                            color: index == 0 ? Colors.red : Colors.green,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 16,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                );
+              },
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  bool _hasSmartSuggestions() => true;
+
+  Widget _buildSmartSuggestions() {
     return Container(
-      margin: const EdgeInsets.all(16),
+      margin: const EdgeInsets.fromLTRB(20, 0, 20, 20),
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Colors.blue.shade50,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: Colors.blue.shade200),
+        color: Colors.amber.shade50,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: Colors.amber.shade200),
       ),
       child: Row(
         children: [
-          const Icon(Icons.notifications, color: Colors.blue),
-          const SizedBox(width: 16),
+          const Icon(Icons.lightbulb_outline, color: Colors.amber),
+          const SizedBox(width: 12),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
-                  'Reminder',
-                  style: Theme.of(context).textTheme.titleSmall,
+                const Text(
+                  'Max wartet seit 5 Tagen',
+                  style: TextStyle(fontWeight: FontWeight.bold),
                 ),
-                const Text('You have a pending payment to Max.'),
+                Text(
+                  'auf deine Zahlung von 8,50 €',
+                  style: TextStyle(color: Colors.grey.shade700),
+                ),
               ],
             ),
           ),
-          ElevatedButton(
+          TextButton(
             onPressed: () {},
-            child: const Text('Resolve'),
+            style: TextButton.styleFrom(
+              foregroundColor: Colors.amber.shade900,
+            ),
+            child: const Text('Jetzt bezahlen'),
           ),
         ],
       ),
