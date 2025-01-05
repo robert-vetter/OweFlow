@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
@@ -260,4 +261,20 @@ Future<String?> signUpWithPhone(String phone, String password) async {
   }
 }
 
-//######### Social Login ########
+//'############ Auth Notifier #########
+
+// Globaler AuthNotifier
+class AuthNotifier extends ValueNotifier<bool> {
+  AuthNotifier() : super(Supabase.instance.client.auth.currentSession != null) {
+    // Supabase-Listener hinzufügen
+    Supabase.instance.client.auth.onAuthStateChange.listen((event) {
+      update(); // Zustand aktualisieren
+    });
+  }
+
+  void update() {
+    value = Supabase.instance.client.auth.currentSession != null;
+  }
+}
+
+final authNotifier = AuthNotifier();
