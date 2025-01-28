@@ -15,12 +15,6 @@
 3. **Track and Pay**: View balances and settle debts directly in the app.
 
 ## 🛠️ Tech Stack
-- **Frontend**: React (TypeScript)
-- **Backend**: Node.js with Express
-- **Database**: MongoDB
-- **Payments**: PayPal API
-
-## 📦 Installation
-1. Clone the repository:
-   ```bash
-   git clone https://github.com/your-username/oweFlow.git
+- **Frontend**: Flutter
+- **Backend**: Node.js
+- **Database**: Supabase
